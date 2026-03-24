@@ -1,0 +1,16 @@
+{
+  "name": "PolicyPilot AI",
+  "short_name": "PolicyPilot",
+  "start_url": "./standalone_react.html",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#2563eb",
+  "description": "Agentic Welfare Claims Eligibility Dashboard",
+  "icons": [
+    {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Android_Robot.png/512px-Android_Robot.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

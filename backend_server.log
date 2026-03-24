@@ -1,0 +1,37 @@
+==================================================
+PolicyPilot Backend API Server
+==================================================
+Data directory: /Users/mantralakhankiya/Downloads/new/data
+Endpoints:
+  GET  /api/health        — Health check
+  GET  /api/schemes       — All schemes (?category=&scope=)
+  POST /api/analyze       — Run eligibility analysis
+  GET  /api/pdf-registry  — PDF source metadata
+  GET  /api/conflicts     — Conflict detection rules
+==================================================
+ * Serving Flask app 'server'
+ * Debug mode: on
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.16.118:5001
+[33mPress CTRL+C to quit[0m
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 120-591-018
+127.0.0.1 - - [24/Mar/2026 09:58:50] "GET /api/health HTTP/1.1" 200 -
+ * Detected change in '/Users/mantralakhankiya/Downloads/new/backend/eligibility.py', reloading
+==================================================
+PolicyPilot Backend API Server
+==================================================
+Data directory: /Users/mantralakhankiya/Downloads/new/data
+Endpoints:
+  GET  /api/health        — Health check
+  GET  /api/schemes       — All schemes (?category=&scope=)
+  POST /api/analyze       — Run eligibility analysis
+  GET  /api/pdf-registry  — PDF source metadata
+  GET  /api/conflicts     — Conflict detection rules
+==================================================
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 120-591-018

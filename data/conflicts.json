@@ -1,0 +1,91 @@
+{
+  "version": "1.0.0",
+  "description": "Conflict detection rules for PolicyPilot. Each rule defines a pair of schemes that may have contradicting eligibility criteria, along with the exact clauses that contradict.",
+  "conflictRules": [
+    {
+      "ruleId": "CFL-001",
+      "type": "CONTRADICTING_CRITERIA",
+      "name": "Central vs State Agriculture — Land Record Format & Ceiling",
+      "centralSchemeId": "pm-kisan",
+      "stateSchemeId": "agri-state",
+      "triggerCondition": "Both schemes matched for the same citizen in agriculture category",
+      "centralClause": {
+        "pdf": "PM-KISAN_Operational_Guidelines_2024.pdf",
+        "clauseRef": "Clause 3.1(b)",
+        "page": "Page 7",
+        "extractedText": "...cultivable land up to 2 hectares... verified through digitized land records..."
+      },
+      "stateClause": {
+        "pdf": "{state}_Krishi_Sahay_Yojana_2024.pdf",
+        "clauseRef": "Section 2(iv)",
+        "page": "Page 3",
+        "extractedText": "...offline revenue tokens... No upper ceiling on landholding shall apply."
+      },
+      "contradictions": [
+        {
+          "field": "Land Record Format",
+          "centralPosition": "Digital land record mandatory (Clause 4.2, Page 11)",
+          "statePosition": "Offline revenue token accepted (Section 3(a), Page 5)",
+          "severity": "HIGH"
+        },
+        {
+          "field": "Land Ceiling",
+          "centralPosition": "Maximum 2 hectares (Clause 3.1(b), Page 7)",
+          "statePosition": "No upper limit (Section 2(iv), Proviso, Page 3)",
+          "severity": "HIGH"
+        }
+      ],
+      "resolution": "Do NOT silently pick one version. Surface both schemes with their original clauses. Guide: if >2 ha, only state scheme applies; if ≤2 ha with digital records, both apply.",
+      "detailTemplate": "📄 {centralPdf} → {centralClause}, {centralPage} requires DIGITAL land records and caps land at ≤ 2 hectares.\n\n📄 {statePdf} → {stateClause}, {statePage} accepts OFFLINE revenue tokens and has NO upper land limit.\n\n🚩 CONFLICT: Land record format (Digital vs Offline) and land ceiling (2 ha vs None) directly contradict. If you have > 2 hectares, only the state scheme applies. If you have digital records and ≤ 2 hectares, you qualify for BOTH. The system does NOT silently pick one — both are shown with their original clauses.",
+      "translations": {
+        "hi": "📄 {centralPdf} → कलम {centralClause}, पृष्ठ {centralPage}: डिजिटल भूमि रिकॉर्ड अनिवार्य, भूमि सीमा ≤ 2 हेक्टेयर।\n📄 {statePdf} → धारा {stateClause}, पृष्ठ {statePage}: ऑफलाइन टोकन स्वीकृत, कोई भूमि सीमा नहीं।\n🚩 विरोधाभास: भूमि रिकॉर्ड प्रारूप और भूमि सीमा में सीधा विरोधाभास।"
+      }
+    },
+    {
+      "ruleId": "CFL-002",
+      "type": "DUAL_BENEFIT_RESTRICTION",
+      "name": "Central MUDRA vs State Business Grant — Margin Money Conflict",
+      "centralSchemeId": "mudra",
+      "stateSchemeId": "business",
+      "triggerCondition": "Matched for both PM Mudra and State Business Grants.",
+      "centralClause": {
+        "pdf": "MUDRA_Loan_Scheme_Rules.pdf",
+        "clauseRef": "Clause 1.2",
+        "page": "Page 2",
+        "extractedText": "Loans up to ₹10 lakh provided over existing working capital without margin money."
+      },
+      "stateClause": {
+        "pdf": "State_Business_Directive.pdf",
+        "clauseRef": "Section 4(b)",
+        "page": "Page 3",
+        "extractedText": "Financial assistance with 2% interest subvention provided margin is maintained."
+      },
+      "contradictions": [],
+      "resolution": "Citizen must declare the Central MUDRA loan while applying for the State Business subvention. You can avail BOTH, but the state will cap the subvention at ₹2 Lakhs.",
+      "detailTemplate": "📄 {centralPdf} → {centralClause}, {centralPage}: Provides fully collateral-free loans with NO margin money.\n\n📄 {statePdf} → {stateClause}, {statePage}: Offers 2% interest subvention but requires margin maintenance.\n\n🚩 CONFLICT: Dual funding restriction limits overlapping collateral waivers. 💡 WORKAROUND: You can legally stack both! Just declare your MUDRA loan in the State portal to get the discount applied directly to your MUDRA account."
+    },
+    {
+      "ruleId": "CFL-003",
+      "type": "SUBSIDY_OVERLAP",
+      "name": "Central Scholarship vs State Scholarship — Double Dipping Prohibition",
+      "centralSchemeId": "css",
+      "stateSchemeId": "scholarships",
+      "triggerCondition": "Matched for both National Scholarships and State Merit Grants.",
+      "centralClause": {
+        "pdf": "MHRD_Central_Scholarship.pdf",
+        "clauseRef": "Clause 6.1",
+        "page": "Page 11",
+        "extractedText": "Student shall not hold any other scholarship simultaneously."
+      },
+      "stateClause": {
+        "pdf": "State_Scholarship_Directive.pdf",
+        "clauseRef": "Section 2(a)",
+        "page": "Page 2",
+        "extractedText": "Full tuition waiver is granted irrespective of central funding."
+      },
+      "contradictions": [],
+      "resolution": "Legally, a student cannot hold the Central Scholarship and a State Tuition Waiver simultaneously.",
+      "detailTemplate": "📄 {centralPdf} → {centralClause}, {centralPage}: Strictly forbids holding multiple scholarships concurrently.\n\n📄 {statePdf} → {stateClause}, {statePage}: Grants 100% full tuition waiver unconditionally.\n\n🚩 CONFLICT: Explicit 'Double Dipping' prohibition. 💡 WORKAROUND: You must choose only ONE. The State framework mathematically provides more savings (100% waiver). Apply for the State scheme and withdraw the National application."
+    }
+  ]
+}

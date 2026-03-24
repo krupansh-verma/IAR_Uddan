@@ -1,0 +1,13 @@
+{
+    "python.defaultInterpreterPath": "${workspaceFolder}/venv/bin/python",
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}"
+    ],
+    "python.analysis.typeCheckingMode": "basic",
+    "python.pythonPath": "${workspaceFolder}/venv/bin/python",
+    "pyre.searchRoots": [
+        "${workspaceFolder}",
+        "${workspaceFolder}/venv/lib/python3.9/site-packages"
+    ],
+    "pyre.sitePackagePath": "${workspaceFolder}/venv/lib/python3.9/site-packages"
+}

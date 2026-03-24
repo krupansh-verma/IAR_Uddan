@@ -1,0 +1,97 @@
+{
+  "version": "1.0.0",
+  "description": "Registry of all official PDF source documents used by the PolicyPilot RAG pipeline. Each entry maps a PDF to its metadata, enabling audit trails and provenance tracking.",
+  "pdfSources": [
+    {
+      "docId": "AGR-1102",
+      "filename": "PM-KISAN_Operational_Guidelines_2024.pdf",
+      "title": "PM-KISAN Scheme - Operational Guidelines (Revised 2024)",
+      "issuingAuthority": "Ministry of Agriculture & Farmers Welfare, Government of India",
+      "effectiveDate": "2024-04-01",
+      "totalPages": 42,
+      "language": "English",
+      "schemesReferenced": ["pm-kisan"],
+      "keyClausesIndexed": ["Clause 3.1(b)", "Clause 4.2", "Clause 5.1(a)"],
+      "sourceUrl": "https://pmkisan.gov.in/documents/guidelines.pdf",
+      "sha256": "a1b2c3d4e5f6..."
+    },
+    {
+      "docId": "ST-042-GJ",
+      "filename": "Gujarat_Krishi_Sahay_Yojana_2024.pdf",
+      "title": "Mukhyamantri Kisan Sahay Yojana - State Guidelines (Gujarat)",
+      "issuingAuthority": "Agriculture, Farmers Welfare & Co-operation Department, Government of Gujarat",
+      "effectiveDate": "2024-06-15",
+      "totalPages": 18,
+      "language": "English / Gujarati",
+      "schemesReferenced": ["agri-state"],
+      "keyClausesIndexed": ["Section 2(iv)", "Section 3(a)"],
+      "sourceUrl": "https://ikhedut.gujarat.gov.in/documents/sahay_yojana.pdf",
+      "sha256": "b2c3d4e5f6a7..."
+    },
+    {
+      "docId": "EDU-801",
+      "filename": "MHRD_Central_Scholarship_Scheme_Guidelines_2024.pdf",
+      "title": "Central Sector Scholarship Scheme for College & University Students",
+      "issuingAuthority": "Ministry of Education (formerly MHRD), Government of India",
+      "effectiveDate": "2024-07-01",
+      "totalPages": 28,
+      "language": "English",
+      "schemesReferenced": ["css"],
+      "keyClausesIndexed": ["Clause 6.1", "Clause 6.2(a)", "Clause 6.3(b)"],
+      "sourceUrl": "https://scholarships.gov.in/documents/guidelines.pdf",
+      "sha256": "c3d4e5f6a7b8..."
+    },
+    {
+      "docId": "HLTH-05",
+      "filename": "AB-PMJAY_Comprehensive_Guidelines_v3.2.pdf",
+      "title": "Ayushman Bharat PM-JAY Comprehensive Guidelines v3.2",
+      "issuingAuthority": "National Health Authority, Government of India",
+      "effectiveDate": "2024-01-01",
+      "totalPages": 64,
+      "language": "English",
+      "schemesReferenced": ["pm-jay"],
+      "keyClausesIndexed": ["Section 4.1", "Section 4.1(c)", "Section 4.3"],
+      "sourceUrl": "https://pmjay.gov.in/documents/guidelines.pdf",
+      "sha256": "d4e5f6a7b8c9..."
+    },
+    {
+      "docId": "EWS-01",
+      "filename": "DoPT_EWS_Reservation_OM_2019.pdf",
+      "title": "Office Memorandum - Reservation for Economically Weaker Sections (EWS)",
+      "issuingAuthority": "Department of Personnel & Training, Government of India",
+      "effectiveDate": "2019-01-19",
+      "totalPages": 4,
+      "language": "English",
+      "schemesReferenced": ["ews"],
+      "keyClausesIndexed": ["Para 2(i)", "Para 2(ii)(b)", "Para 2"],
+      "sourceUrl": "https://dopt.gov.in/documents/ews_om.pdf",
+      "sha256": "e5f6a7b8c9d0..."
+    },
+    {
+      "docId": "HSG-301",
+      "filename": "PMAY-U_Scheme_Guidelines_2024_Revised.pdf",
+      "title": "Pradhan Mantri Awas Yojana (Urban) - Revised Guidelines 2024",
+      "issuingAuthority": "Ministry of Housing & Urban Affairs, Government of India",
+      "effectiveDate": "2024-03-01",
+      "totalPages": 52,
+      "language": "English",
+      "schemesReferenced": ["pmay"],
+      "keyClausesIndexed": ["Clause 7.1(a)", "Clause 7.1(b)", "Clause 7.2"],
+      "sourceUrl": "https://pmaymis.gov.in/documents/guidelines.pdf",
+      "sha256": "f6a7b8c9d0e1..."
+    },
+    {
+      "docId": "EMP-101",
+      "filename": "NREGA_Act_2005_Operational_Guidelines_4th_Ed.pdf",
+      "title": "MGNREGA Act 2005 - Operational Guidelines (4th Edition)",
+      "issuingAuthority": "Ministry of Rural Development, Government of India",
+      "effectiveDate": "2013-01-01",
+      "totalPages": 186,
+      "language": "English",
+      "schemesReferenced": ["mgnrega"],
+      "keyClausesIndexed": ["Section 3(1)", "Section 4(1)"],
+      "sourceUrl": "https://nrega.nic.in/documents/guidelines.pdf",
+      "sha256": "a7b8c9d0e1f2..."
+    }
+  ]
+}

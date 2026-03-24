@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2563eb">
+  <title>YojnaAI - All-India Multilingual</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    :root {
+      --bg-main: #f8fafc;
+      --bg-panel: rgba(255, 255, 255, 0.95);
+      --panel-border: rgba(226, 232, 240, 0.8);
+      --primary: #000080;
+      --primary-hover: #000066;
+      --primary-light: #e0e7ff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --danger: #dc2626;
+      --danger-bg: #fef2f2;
+      --danger-border: #fecaca;
+      --warning: #d97706;
+      --warning-bg: #fffbeb;
+      --warning-border: #fde68a;
+      --success: #059669;
+      --success-bg: #ecfdf5;
+      --success-border: #a7f3d0;
+      --radius: 12px;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-image: linear-gradient(135deg, rgba(255,153,51,0.88) 0%, rgba(255,255,255,0.96) 50%, rgba(19,136,8,0.88) 100%), url('assets/indian_industries_bg.png');
+      background-attachment: fixed;
+      background-size: cover;
+      background-position: center;
+      color: var(--text-main);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .auth-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem; background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%); }
+    .auth-box { background: white; padding: 2.5rem; border-radius: 16px; box-shadow: var(--shadow-lg); width: 100%; max-width: 420px; text-align: center; }
+    .auth-box h2 { font-size: 2rem; color: var(--text-main); margin-bottom: 0.5rem; font-weight: 700; }
+    .auth-box h2 span { color: var(--primary); }
+    .auth-input { width: 100%; padding: 0.9rem; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 1rem; font-size: 1rem; background: #f8fafc; }
+    .auth-btn { width: 100%; padding: 1rem; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
+    .auth-toggle { background: none; border: none; color: var(--text-muted); cursor: pointer; margin-top: 1.5rem; font-size: 0.95rem; }
+    .auth-toggle span { color: var(--primary); font-weight: 600; }
+
+    .dashboard-layout { padding: 3rem 1.5rem; }
+    .user-header-pill { position: absolute; top: 1.5rem; left: 1.5rem; background: #e0e7ff; color: #4338ca; padding: 6px 16px; border-radius: 999px; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+    .logout-btn { background: none; border: none; color: #ef4444; font-size: 0.75rem; font-weight: bold; cursor: pointer; margin-left: 8px; }
+    .container { max-width: 900px; margin: 0 auto; position: relative; }
+    .card { background: var(--bg-panel); border: 1px solid var(--panel-border); border-radius: var(--radius); padding: 2rem; margin-bottom: 2rem; box-shadow: var(--shadow-sm); }
+    .badge { display: inline-block; background: var(--primary-light); color: var(--primary); padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; margin-bottom: 1rem; }
+    .textarea-wrapper { position: relative; width: 100%; }
+    textarea { width: 100%; padding: 1rem; padding-right: 3.5rem; border-radius: 8px; border: 1px solid #cbd5e1; min-height: 120px; font-family: inherit; }
+    .mic-button { position: absolute; bottom: 1rem; right: 1rem; border-radius: 50%; width: 44px; height: 44px; display: flex; border: 1px solid #cbd5e1; cursor: pointer; align-items: center; justify-content: center; background: #f1f5f9; }
+    .mic-button.recording { background: #fef2f2; border-color: #ef4444; color: #ef4444; animation: pulse-red 1.5s infinite; }
+    @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+    .btn-primary { width: 100%; padding: 1rem; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 1rem; }
+    .lang-selector { position: absolute; top: -1.75rem; right: 0; background: white; border: 1px solid #cbd5e1; border-radius: 8px; padding: 6px; }
+
+    /* Alert Banner */
+    .alert-banner { background: linear-gradient(135deg, #4338ca 0%, #1e1b4b 100%); color: white; padding: 1rem 1.5rem; border-radius: 12px; margin-bottom: 2rem; display: flex; align-items: center; gap: 1.5rem; position: relative; }
+    
+    @keyframes ring {
+      0% { transform: rotate(0); }
+      5% { transform: rotate(20deg); }
+      10% { transform: rotate(-20deg); }
+      15% { transform: rotate(15deg); }
+      20% { transform: rotate(-15deg); }
+      25% { transform: rotate(10deg); }
+      30% { transform: rotate(-10deg); }
+      35% { transform: rotate(0); }
+      100% { transform: rotate(0); }
+    }
+    .alert-icon-ring { 
+      background: rgba(255, 255, 255, 0.2); 
+      width: 48px; 
+      height: 48px; 
+      border-radius: 50%; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
+      animation: ring 2.5s ease-in-out infinite;
+      transform-origin: top center;
+      font-size: 1.5rem;
+    }
+
+    @keyframes rainbow-glow {
+      0% { background: #ff0000; box-shadow: 0 0 12px #ff0000; }
+      14% { background: #ff7f00; box-shadow: 0 0 12px #ff7f00; }
+      28% { background: #ffff00; box-shadow: 0 0 12px #ffff00; }
+      42% { background: #00ff00; box-shadow: 0 0 12px #00ff00; }
+      57% { background: #0000ff; box-shadow: 0 0 12px #0000ff; }
+      71% { background: #4b0082; box-shadow: 0 0 12px #4b0082; }
+      85% { background: #8b00ff; box-shadow: 0 0 12px #8b00ff; }
+      100% { background: #ff0000; box-shadow: 0 0 12px #ff0000; }
+    }
+    .alert-badge { 
+      color: white; 
+      font-size: 0.7rem; 
+      font-weight: 800; 
+      padding: 3px 10px; 
+      border-radius: 6px; 
+      margin-bottom: 0.35rem; 
+      display: inline-block; 
+      animation: rainbow-glow 3s linear infinite;
+      text-shadow: 0 0 5px rgba(255,255,255,0.5);
+      border: none;
+    }
+    .alert-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .alert-actions { display: flex; gap: 1rem; align-items: center; margin-top: 0.75rem; }
+    .alert-cta { background: white; color: #4338ca; border: none; padding: 0.5rem 1.25rem; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+    .alert-cta:hover { transform: scale(1.05); background: #f8fafc; }
+
+    /* Results */
+    .scheme-card { background: white; padding: 1.25rem; border-radius: 8px; border: 1px solid #e2e8f0; cursor: pointer; transition: 0.2s; }
+    .scheme-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem; margin-top: 1rem; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .tag { background: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 500; border: 1px solid #e2e8f0; }
+    .logic-tag { background: #e0e7ff; color: #4338ca; padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+
+    /* Chatbot */
+    .chatbot-fab { position: fixed; bottom: 2rem; right: 2rem; width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: white; font-size: 1.8rem; border: none; cursor: pointer; z-index: 10000; box-shadow: var(--shadow-lg); transition: transform 0.2s; }
+    .chatbot-fab:hover { transform: scale(1.1); }
+    .chatbot-window { position: fixed; bottom: 6rem; right: 2rem; width: 350px; height: 480px; background: white; border-radius: 12px; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; z-index: 10000; overflow: hidden; border: 1px solid var(--panel-border); }
+    .chatbot-header { background: var(--primary); color: white; padding: 1rem; display: flex; justify-content: space-between; align-items: center; }
+    .chatbot-messages { flex: 1; overflow-y: auto; padding: 1rem; background: #f8fafc; display: flex; flex-direction: column; gap: 0.75rem; }
+    .chat-msg { max-width: 85%; padding: 0.75rem 1rem; border-radius: 12px; font-size: 0.9rem; }
+    .chat-msg.bot { background: #e2e8f0; align-self: flex-start; border-bottom-left-radius: 0; }
+    .chat-msg.user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 0; }
+    .chatbot-input { display: flex; padding: 0.75rem; border-top: 1px solid #e2e8f0; }
+    .chatbot-input input { flex: 1; padding: 0.5rem 1rem; border-radius: 20px; border: 1px solid #cbd5e1; margin-right: 0.5rem; outline: none; }
+    .chatbot-input button { background: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 20px; cursor: pointer; }
+
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(4px); }
+    .modal-content { background: white; width: 90%; max-width: 700px; padding: 2rem; border-radius: 16px; position: relative; max-height: 85vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
+    .modal-close { position: absolute; top: 1rem; right: 1rem; border: none; background: #f1f5f9; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; }
+
+    .spinner-container { display: flex; justify-content: center; margin: 2rem 0; }
+    .spinner { width: 30px; height: 30px; border: 3px solid #e2e8f0; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    const TRANSLATIONS = {
+      en: {
+        titleSub: "AI Welfare Claims Eligibility System", intakeBadge: "Data Intake", intakeLabel: "Input Citizen Metrics",
+        analyzeBtn: "Analyze Eligibility", processing: "Processing...", successTitle: "Profile Verified", warningTitle: "Profile Alerts",
+        matchesBadge: "Policy Match", matchesTitle: "Eligible Schemes Found", noMatches: "No active schemes match your current profile.", 
+        dashAnnualIncome: "💰 Annual Income (₹)", dashState: "📍 State", dashCategory: "🏷️ Need Category", dashCaste: "🏷️ Caste",
+        summaryTitle: "YojnaAI Analysis", logoutBtn: "Logout",
+        tagAge: "Age: ", tagState: "State: ", tagIncome: "Income: ", tagNone: "None",
+        authHeading1: "Yojna", authHeading2: "AI",
+        casteGeneral: "General", casteOBC: "OBC", casteSCST: "SC/ST", casteEWS: "EWS",
+        botGreeting: "Namaste! How can I help you today?", botFallback: "I'm looking for relevant policies. Try asking about 'farming', 'students', or 'pension'.", botError: "I encountered an error understanding your query."
+      },
+      hi: {
+        titleSub: "AI कल्याण दावा प्रणाली", intakeBadge: "डेटा इनटेक", intakeLabel: "विवरण दर्ज करें",
+        analyzeBtn: "पात्रता विश्लेषण", processing: "प्रोसेसिंग...", successTitle: "प्रोफ़ाइल सत्यापित", warningTitle: "अलर्ट",
+        matchesBadge: "योजना मिलान", matchesTitle: "पात्र योजनाएं", noMatches: "कोई योजना मेल नहीं खाती।",
+        dashAnnualIncome: "💰 वार्षिक आय (₹)", dashState: "📍 राज्य", dashCategory: "🏷️ श्रेणी", dashCaste: "🏷️ जाति",
+        summaryTitle: "योजनाAI विश्लेषण", logoutBtn: "लॉग आउट",
+        tagAge: "आयु: ", tagState: "राज्य: ", tagIncome: "आय: ", tagNone: "कोई नहीं",
+        authHeading1: "योजना", authHeading2: "AI",
+        casteGeneral: "सामान्य", casteOBC: "ओबीसी", casteSCST: "एससी/एसटी", casteEWS: "ईडब्ल्यूएस",
+        botGreeting: "नमस्ते! मैं आज आपकी कैसे मदद कर सकता हूँ?", botFallback: "मैं प्रासंगिक नीतियों की तलाश कर रहा हूं। 'खेती', 'छात्रों', या 'पेंशन' के बारे में पूछने का प्रयास करें।", botError: "मुझे आपकी क्वेरी समझने में त्रुटि हुई।"
+      },
+      gu: { 
+        titleSub: "AI કલ્યાણ દાવો સિસ્ટમ", intakeBadge: "ડેટા ઇન્ટેક", intakeLabel: "વિગતો દાખલ કરો",
+        analyzeBtn: "પાત્રતા વિશ્લેષણ", processing: "પ્રક્રિયા થઈ રહી છે...", successTitle: "પ્રોફાઇલ ચકાસાયેલ", warningTitle: "ચેતવણીઓ",
+        matchesBadge: "યોજના મેચ", matchesTitle: "પાત્ર યોજનાઓ", noMatches: "કોઈ યોજના મેળ ખાતી નથી.",
+        dashAnnualIncome: "💰 વાર્ષિક આવક (₹)", dashState: "📍 રાજ્ય", dashCategory: "🏷️ શ્રેણી", dashCaste: "🏷️ જાતિ",
+        summaryTitle: "યોજનાAI વિશ્લેષણ", logoutBtn: "લૉગ આઉટ",
+        tagAge: "ઉંમર: ", tagState: "રાજ્ય: ", tagIncome: "આવક: ", tagNone: "કોઈ નહિ",
+        authHeading1: "યોજના", authHeading2: "AI",
+        casteGeneral: "સામાન્ય", casteOBC: "OBC", casteSCST: "SC/ST", casteEWS: "EWS",
+        botGreeting: "નમસ્તે! હું આજે તમારી કેવી રીતે મદદ કરી શકું?", botFallback: "હું સંબંધિત નીતિઓ શોધી રહ્યો છું. 'ખેતી', 'વિદ્યાર્થીઓ' અથવા 'પેન્શન' વિશે પૂછવાનો પ્રયાસ કરો.", botError: "ભૂલ આવી છે."
+      },
+      mr: {
+        titleSub: "AI कल्याण दावा प्रणाली", intakeBadge: "डेटा इनटेक", intakeLabel: "तपशील प्रविष्ट करा",
+        analyzeBtn: "पात्रता विश्लेषण", processing: "प्रक्रिया करत आहे...", successTitle: "प्रोफाइल सत्यापित", warningTitle: "सूचना",
+        matchesBadge: "योजना जुळणी", matchesTitle: "पात्र योजना", noMatches: "कोणतीही योजना जुळत नाही.",
+        dashAnnualIncome: "💰 वार्षिक उत्पन्न (₹)", dashState: "📍 राज्य", dashCategory: "🏷️ श्रेणी", dashCaste: "🏷️ जात",
+        summaryTitle: "योजनाAI विश्लेषण", logoutBtn: "लॉग आउट",
+        tagAge: "वय: ", tagState: "राज्य: ", tagIncome: "उत्पन्न: ", tagNone: "काहीही नाही",
+        authHeading1: "योजना", authHeading2: "AI",
+        casteGeneral: "सामान्य", casteOBC: "ओबीसी", casteSCST: "एससी/एसटी", casteEWS: "ईडब्ल्यूएस",
+        botGreeting: "नमस्कार! मी आज तुमची कशी मदत करू शकेन?", botFallback: "मी संबंधित धोरणे शोधत आहे. 'शेती', 'विद्यार्थी' किंवा 'पेन्शन' बद्दल विचारून पहा.", botError: "मला समजण्यास त्रुटी आली."
+      },
+      ta: {
+        titleSub: "AI நல உரிமை கோரல் அமைப்பு", intakeBadge: "தரவு உள்ளீடு", intakeLabel: "விவரங்களை உள்ளிடவும்",
+        analyzeBtn: "தகுதி பகுப்பாய்வு", processing: "செயலாக்கப்படுகிறது...", successTitle: "சுயவிவரம் சரிபார்க்கப்பட்டது", warningTitle: "எச்சரிக்கைகள்",
+        matchesBadge: "திட்டப் பொருத்தம்", matchesTitle: "தகுதியான திட்டங்கள்", noMatches: "எந்த திட்டமும் பொருந்தவில்லை.",
+        dashAnnualIncome: "💰 ஆண்டு வருமானம் (₹)", dashState: "📍 மாநிலம்", dashCategory: "🏷️ வகை", dashCaste: "🏷️ சாதி",
+        summaryTitle: "யோஜனாAI பகுப்பாய்வு", logoutBtn: "வெளியேறு",
+        tagAge: "வயது: ", tagState: "மாநிலம்: ", tagIncome: "வருமானம்: ", tagNone: "ஏதுமில்லை",
+        authHeading1: "யோஜனா", authHeading2: "AI",
+        casteGeneral: "பொது", casteOBC: "OBC", casteSCST: "SC/ST", casteEWS: "EWS",
+        botGreeting: "வணக்கம்! இன்று நான் உங்களுக்கு எப்படி உதவ முடியும்?", botFallback: "நான் கொள்கைகளைத் தேடுகிறேன். 'விவசாயம்' பற்றி கேட்கவும்.", botError: "பிழை ஏற்பட்டது."
+      },
+      te: {
+        titleSub: "AI సంక్షేమ దావా వ్యవస్థ", intakeBadge: "డేటా ఇన్‌టేక్", intakeLabel: "వివరాలను నమోదు చేయండి",
+        analyzeBtn: "అర్హత విశ్లేషణ", processing: "ప్రాసెస్ చేయబడుతోంది...", successTitle: "ప్రొఫైల్ ధృవీకరించబడింది", warningTitle: "హెచ్చరికలు",
+        matchesBadge: "పథకం సరిపోలిక", matchesTitle: "అర్హత ఉన్న పథకాలు", noMatches: "ఏ పథకం సరిపోలడం లేదు.",
+        dashAnnualIncome: "💰 వార్షిక ఆదాయం (₹)", dashState: "📍 రాష్ట్రం", dashCategory: "🏷️ వర్గం", dashCaste: "🏷️ కులం",
+        summaryTitle: "యోజనాAI విశ్లేషణ", logoutBtn: "లాగ్ అవుట్",
+        tagAge: "వయస్సు: ", tagState: "రాష్ట్రం: ", tagIncome: "ఆదాయం: ", tagNone: "ఏమీ లేదు",
+        authHeading1: "యోజనా", authHeading2: "AI",
+        casteGeneral: "జనరల్", casteOBC: "ఓబీసీ", casteSCST: "ఎస్సీ/ఎస్టీ", casteEWS: "ఈడబ్ల్యూఎస్",
+        botGreeting: "నమస్తే! నేను ఎలా సహాయపడగలను?", botFallback: "నేను విధానాల కోసం చూస్తున్నాను. 'వ్యవసాయం' గురించి అడగండి.", botError: "లోపం ఏర్పడింది."
+      },
+      pa: {
+        titleSub: "AI ਭਲਾਈ ਦਾਅਵਾ ਪ੍ਰਣਾਲੀ", intakeBadge: "ਡੇਟਾ ਇਨਟੇਕ", intakeLabel: "ਵੇਰਵੇ ਦਰਜ ਕਰੋ",
+        analyzeBtn: "ਯੋਗਤਾ ਵਿਸ਼ਲੇਸ਼ਣ", processing: "ਕਾਰਵਾਈ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...", successTitle: "ਪ੍ਰੋਫਾਈਲ ਪ੍ਰਮਾਣਿਤ", warningTitle: "ਚੇਤਾਵਨੀਆਂ",
+        matchesBadge: "ਸਕੀਮ ਮੇਲ", matchesTitle: "ਯੋਗ ਸਕੀਮਾਂ", noMatches: "ਕੋਈ ਸਕੀਮ ਮੇਲ ਨਹੀਂ ਖਾਂਦੀ।",
+        dashAnnualIncome: "💰 ਸਾਲਾਨਾ ਆਮਦਨ (₹)", dashState: "📍 ਰਾਜ", dashCategory: "🏷️ ਸ਼੍ਰੇਣੀ", dashCaste: "🏷️ ਜਾਤ",
+        summaryTitle: "ਯੋਜਨਾAI ਵਿਸ਼ਲੇਸ਼ਣ", logoutBtn: "ਲੌਗ ਆਉਟ",
+        tagAge: "ਉਮਰ: ", tagState: "ਰਾਜ: ", tagIncome: "ਆਮਦਨ: ", tagNone: "ਕੁਝ ਨਹੀਂ",
+        authHeading1: "ਯੋਜਨਾ", authHeading2: "AI",
+        casteGeneral: "ਜਨਰਲ", casteOBC: "ਓਬੀਸੀ", casteSCST: "ਐਸਸੀ/ਐਸਟੀ", casteEWS: "ਈਡਬਲਯੂਐਸ",
+        botGreeting: "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ! ਅੱਜ ਮੈਂ ਤੁਹਾਡੀ ਕਿਵੇਂ ਮਦਦ ਕਰ ਸਕਦਾ ਹਾਂ?", botFallback: "ਮੈਂ ਨੀਤੀਆਂ ਲੱਭ ਰਿਹਾ ਹਾਂ। 'ਖੇਤੀ' ਬਾਰੇ ਪੁੱਛੋ।", botError: "ਗਲਤੀ ਆਈ ਹੈ।"
+      },
+      bn: {
+        titleSub: "AI কল্যাণ দাবি সিস্টেম", intakeBadge: "ডেটা ইনটেক", intakeLabel: "বিবরণ লিখুন",
+        analyzeBtn: "যোগ্যতা বিশ্লেষণ", processing: "প্রক্রিয়া চলছে...", successTitle: "প্রোফাইল যাচাইকৃত", warningTitle: "সতর্কতা",
+        matchesBadge: "স্কিম মিল", matchesTitle: "যোগ্য স্কিম", noMatches: "কোন স্কিম মিলে না।",
+        dashAnnualIncome: "💰 বার্ষিক আয় (₹)", dashState: "📍 রাজ্য", dashCategory: "🏷️ বিভাগ", dashCaste: "🏷️ জাতি",
+        summaryTitle: "যোজনাAI বিশ্লেষণ", logoutBtn: "লগ আউট",
+        tagAge: "বয়স: ", tagState: "রাজ្យ: ", tagIncome: "আয়: ", tagNone: "কিছুই না",
+        authHeading1: "যোজনা", authHeading2: "AI",
+        casteGeneral: "সাধারণ", casteOBC: "ওবিসি", casteSCST: "এসসি/এসটি", casteEWS: "ইডাব্লুএস",
+        botGreeting: "নমস্কার! আমি কীভাবে সাহায্য করতে পারি?", botFallback: "আমি নীতি খুঁজছি। 'কৃষি' সম্পর্কে জিজ্ঞাসা করুন।", botError: "একটি ত্রুটি ঘটেছে।"
+      }
+    };
+
+    const INDIAN_STATES = ["Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Delhi"];
+    const NEED_CATEGORIES = [{ value: "agriculture", label: "🌾 Agriculture" }, { value: "education", label: "🎓 Education" }, { value: "health", label: "🏥 Health" }, { value: "housing", label: "🏠 Housing" }, { value: "employment", label: "💼 Employment" }];
+
+    const Chatbot = ({ schemes, language, t }) => {
+      const [isOpen, setIsOpen] = useState(false);
+      const [showSettings, setShowSettings] = useState(false);
+      const [apiKey, setApiKey] = useState(localStorage.getItem('gemini_api_key') || '');
+      const [messages, setMessages] = useState([{ sender: 'bot', text: t?.botGreeting || 'Namaste! How can I help you today?' }]);
+      const [input, setInput] = useState('');
+      const endRef = useRef(null);
+
+      useEffect(() => {
+        if (messages.length <= 1) {
+            setMessages([{ sender: 'bot', text: t?.botGreeting || 'Namaste! How can I help you today?' }]);
+        }
+      }, [language, t]);
+
+      useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
+
+      const saveKey = () => {
+        localStorage.setItem('gemini_api_key', apiKey.trim());
+        setShowSettings(false);
+      };
+
+      const handleSend = async () => {
+        if (!input.trim()) return;
+        const msg = input.trim();
+        setMessages(prev => [...prev, { sender: 'user', text: msg }]);
+        setInput('');
+        setMessages(prev => [...prev, { sender: 'bot', text: 'Thinking...', isTyping: true }]);
+
+        try {
+          const response = await fetch('http://localhost:5001/api/chat', {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+              'X-Gemini-Key': localStorage.getItem('gemini_api_key') || ''
+            },
+            body: JSON.stringify({ message: msg })
+          });
+          
+          if (!response.ok) throw new Error("Network Response Error");
+          const data = await response.json();
+          
+          setMessages(prev => {
+            const noTyping = prev.filter(m => !m.isTyping);
+            return [...noTyping, { sender: 'bot', text: data.reply || "No response received." }];
+          });
+        } catch(e) {
+          console.error("Chatbot Error:", e);
+          setMessages(prev => {
+            const noTyping = prev.filter(m => !m.isTyping);
+            return [...noTyping, { sender: 'bot', text: "Error connecting to AI Server. Please ensure 'py run_server.py' is running and the internet is connected." }];
+          });
+        }
+      };
+
+      return (
+        <>
+          {isOpen && (
+            <div className="chatbot-window" style={{ display: 'flex', flexDirection: 'column' }}>
+              <div className="chatbot-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
+                  <h4>YojnaAI Assistant</h4>
+                </div>
+                <div>
+                  <button onClick={() => setIsOpen(false)} style={{background:'transparent',border:'none',color:'white',fontSize:'1.2rem',cursor:'pointer'}}>✕</button>
+                </div>
+              </div>
+
+              <div className="chatbot-messages" style={{ flexGrow: 1 }}>
+                {messages.map((m, i) => <div key={i} className={`chat-msg ${m.sender}`}>{m.text}</div>)}
+                <div ref={endRef} />
+              </div>
+              <div className="chatbot-input">
+                <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSend()} placeholder="Ask about policies..." />
+                <button onClick={handleSend}>Send</button>
+              </div>
+            </div>
+          )}
+          <button className="chatbot-fab" onClick={() => setIsOpen(true)}>🤖</button>
+        </>
+      );
+    };
+
+
+
+    const Dashboard = ({ user, onLogout, initialSchemes = [] }) => {
+      const [language, setLanguage] = useState("en");
+      const t = TRANSLATIONS[language];
+      const [inputText, setInputText] = useState("I am a 45-year-old farmer in Gujarat.");
+      const [income, setIncome] = useState("140000");
+      const [state, setState] = useState("Gujarat");
+      const [category, setCategory] = useState("");
+      const [caste, setCaste] = useState("General");
+      const [isProcessing, setIsProcessing] = useState(false);
+      const [results, setResults] = useState(null);
+      const [selectedScheme, setSelectedScheme] = useState(null);
+      const [isRecording, setIsRecording] = useState(false);
+      const recRef = useRef(null);
+
+      const handleAnalyze = async () => {
+        setIsProcessing(true);
+        try {
+          const res = await fetch('http://localhost:5001/api/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: inputText, income: Number(income), state, category, caste, language })
+          });
+          const data = await res.json();
+          setResults(data);
+        } catch (e) {
+          alert("Backend Error. Ensure the backend is running by executing 'py run_server.py' in the terminal.");
+        } finally { setIsProcessing(false); }
+      };
+
+      const toggleMic = () => {
+        if (isRecording) { recRef.current?.stop(); setIsRecording(false); }
+        else {
+          const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+          if (!Speech) return alert("Browser too old.");
+          const rec = new Speech();
+          rec.lang = language === 'hi' ? 'hi-IN' : 'en-IN';
+          rec.onresult = (e) => setInputText(prev => prev + " " + e.results[0][0].transcript);
+          rec.onend = () => setIsRecording(false);
+          rec.start();
+          recRef.current = rec;
+          setIsRecording(true);
+        }
+      };
+
+      return (
+        <div className="dashboard-layout">
+          <div className="user-header-pill">🛡 UID: {user.id} <button className="logout-btn" onClick={onLogout}>logout</button></div>
+          <div className="container">
+            <div className="alert-banner">
+              <div className="alert-icon-ring">🔔</div>
+              <div className="alert-content">
+                <div className="alert-badge">NEW</div>
+                <div className="alert-title">PM-Vidyalaxmi Scholarship 2024</div>
+                <p style={{fontSize:'0.85rem', opacity:0.9}}>Education loans up to ₹10 Lakhs with interest subsidies.</p>
+                <div className="alert-actions"><button className="alert-cta" onClick={() => setSelectedScheme({title:"PM-Vidyalaxmi Scholarship 2024", summary:"Education loan scheme with interest subsidies up to ₹10 Lakhs.", documents:['Aadhaar','Marksheet','Income Certificate'], url:"https://pmvidyalaxmi.gov.in", docId:"EDU-VLX-24", pdfSource:"PM_Vidyalaxmi_Guidelines.pdf", clauseRef:"Section 2", pageRef:"Page 1", category:"education", deadline:"Dec 31, 2024"})}>Apply Now</button></div>
+              </div>
+            </div>
+
+            <select className="lang-selector" onChange={e => setLanguage(e.target.value)} value={language}>
+              <option value="en">English</option>
+              <option value="hi">हिंदी</option>
+              <option value="gu">ગુજરાતી</option>
+              <option value="mr">मराठी</option>
+              <option value="ta">தமிழ்</option>
+              <option value="te">తెలుగు</option>
+              <option value="pa">ਪੰਜਾਬੀ</option>
+              <option value="bn">বাংলা</option>
+            </select>
+
+            <header style={{textAlign: 'center', marginBottom: '2rem', marginTop: '1rem'}}>
+              <h1 style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'15px', fontSize: '3rem', color: '#000080', textShadow: '0 2px 4px rgba(0,0,0,0.1)', fontWeight: '800'}}>
+                <img src="assets/indian_emblem_logo_1774346812765.png" style={{height:'70px'}} />
+                {t.authHeading1}<span style={{color: '#FF9933'}}>{t.authHeading2}</span>
+              </h1>
+              <p style={{fontSize: '1.2rem', color: '#138808', fontWeight: '700', letterSpacing: '0.5px'}}>{t.titleSub}</p>
+            </header>
+
+            <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '2.5rem'}}>
+              <div style={{position: 'relative', borderRadius: '16px', overflow: 'hidden', boxShadow: 'var(--shadow-lg)', height: '220px', border: '3px solid white'}}>
+                <img src="assets/happy_indian_farmers.png" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                <div style={{position: 'absolute', bottom: 0, left: 0, width: '100%', padding: '20px', background: 'linear-gradient(transparent, rgba(0,0,0,0.85))', color: 'white'}}>
+                  <h3 style={{margin: 0, fontSize: '1.2rem', color: '#FF9933', textShadow: '0 1px 2px rgba(0,0,0,1)'}}>Empowering Farmers</h3>
+                  <p style={{margin: 0, fontSize: '0.9rem', opacity: 0.95}}>Connecting rural India to timely agricultural subsidies.</p>
+                </div>
+              </div>
+              <div style={{position: 'relative', borderRadius: '16px', overflow: 'hidden', boxShadow: 'var(--shadow-lg)', height: '220px', border: '3px solid white'}}>
+                <img src="assets/indian_children_fed.png" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                <div style={{position: 'absolute', bottom: 0, left: 0, width: '100%', padding: '20px', background: 'linear-gradient(transparent, rgba(0,0,0,0.85))', color: 'white'}}>
+                  <h3 style={{margin: 0, fontSize: '1.2rem', color: '#138808', textShadow: '0 1px 2px rgba(0,0,0,1)'}}>Nurturing the Future</h3>
+                  <p style={{margin: 0, fontSize: '0.9rem', opacity: 0.95}}>Ensuring education & nutrition reach every child.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="card" style={{borderTop: '6px solid #FF9933', borderBottom: '6px solid #138808', boxShadow: '0 8px 32px rgba(0,0,0,0.1)'}}>
+              <span className="badge" style={{background: '#000080', color: 'white', padding: '0.4rem 1rem', fontSize: '0.85rem'}}>{t.intakeBadge}</span>
+              <div className="textarea-wrapper">
+                <textarea value={inputText} onChange={e => setInputText(e.target.value)} placeholder="Describe your situation..." style={{borderColor: '#FF9933'}} />
+                <button className={`mic-button ${isRecording ? 'recording' : ''}`} onClick={toggleMic}>🎙</button>
+              </div>
+              <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(180px, 1fr))', gap:'1rem', marginTop:'1.5rem'}}>
+                <div><label>{t.dashAnnualIncome}</label><input className="auth-input" value={income} onChange={e => setIncome(e.target.value)} /></div>
+                <div><label>{t.dashState}</label>
+                  <select className="auth-input" value={state} onChange={e => setState(e.target.value)}>
+                    <option value="">All States</option>
+                    {INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+                <div><label>{t.dashCategory}</label>
+                  <select className="auth-input" value={category} onChange={e => setCategory(e.target.value)}>
+                    <option value="">All Categories</option>
+                    {NEED_CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                  </select>
+                </div>
+                <div><label>{t.dashCaste}</label>
+                  <select className="auth-input" value={caste} onChange={e => setCaste(e.target.value)}>
+                    <option value="General">{t.casteGeneral}</option>
+                    <option value="OBC">{t.casteOBC}</option>
+                    <option value="SC/ST">{t.casteSCST}</option>
+                    <option value="EWS">{t.casteEWS}</option>
+                  </select>
+                </div>
+              </div>
+              <button className="btn-primary" onClick={handleAnalyze} disabled={isProcessing}>{isProcessing ? t.processing : t.analyzeBtn}</button>
+            </div>
+
+            {results && (
+              <div style={{animation:'fadeIn 0.4s'}}>
+                <div style={{
+                  background: 'rgba(255, 255, 255, 0.85)', 
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(16, 185, 129, 0.4)',
+                  borderRadius: '16px', 
+                  padding: '24px',
+                  marginBottom: '24px',
+                  boxShadow: 'var(--shadow-lg)'
+                }}>
+                  <h3 style={{display:'flex', alignItems:'center', gap:'10px', marginBottom:'20px', color:'#065f46', fontSize:'1.4rem'}}>
+                    <span style={{background:'#10b981', color:'white', borderRadius:'50%', width:'32px', height:'32px', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'1.2rem'}}>✓</span> 
+                    {t.successTitle}
+                  </h3>
+                  
+                  {/* PERFECTLY FORMATTED SUMMARY SECTION */}
+                  <div style={{
+                    background: 'rgba(255, 255, 255, 0.7)', 
+                    padding: '20px', 
+                    borderRadius: '12px', 
+                    lineHeight: '1.85', 
+                    fontSize: '0.95rem', 
+                    color: '#1e293b', 
+                    borderLeft: '5px solid #10b981', 
+                    marginBottom: '20px'
+                  }}>
+                    <h4 style={{marginBottom:'10px', fontSize:'0.85rem', textTransform:'uppercase', color:'#047857', letterSpacing:'1px', fontWeight:'800'}}>Analysis Summary</h4>
+                    <div>{results.summary}</div>
+                  </div>
+                  
+                  {/* 2-Column Grid: Reconstruction & Opportunities */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+                    
+                    {/* Profile Reconstruction Tags */}
+                    <div style={{
+                      background: 'rgba(255, 255, 255, 0.7)', 
+                      padding: '20px', 
+                      borderRadius: '12px', 
+                      border: '1px solid #a7f3d0'
+                    }}>
+                      <h5 style={{marginBottom:'12px', textTransform:'uppercase', fontSize:'0.85rem', letterSpacing:'1px', color:'#047857', fontWeight:'800'}}>Citizen Profile Reconstruction</h5>
+                      <div style={{display:'flex', gap:'12px', flexWrap:'wrap'}}>
+                        <span style={{background:'#059669', color:'white', padding:'6px 14px', borderRadius:'99px', fontSize:'0.85rem', fontWeight:'600'}}>👤 Age: {results.profile?.age || 'N/A'}</span>
+                        <span style={{background:'#059669', color:'white', padding:'6px 14px', borderRadius:'99px', fontSize:'0.85rem', fontWeight:'600'}}>📍 State: {results.profile?.state || 'Any'}</span>
+                        <span style={{background:'#059669', color:'white', padding:'6px 14px', borderRadius:'99px', fontSize:'0.85rem', fontWeight:'600'}}>💰 Income: ₹{results.profile?.income || '0'}</span>
+                        <span style={{background:'#059669', color:'white', padding:'6px 14px', borderRadius:'99px', fontSize:'0.85rem', fontWeight:'600'}}>🏷️ Caste: {results.profile?.caste || 'General'}</span>
+                        <span style={{background:'#059669', color:'white', padding:'6px 14px', borderRadius:'99px', fontSize:'0.85rem', fontWeight:'600'}}>🎯 Req Category: {results.profile?.category || 'All'}</span>
+                      </div>
+                    </div>
+
+                    {/* Profile Strengthening Opportunities Column */}
+                    <div style={{
+                      background: 'rgba(238, 242, 255, 0.85)', 
+                      padding: '20px', 
+                      borderRadius: '12px', 
+                      border: '1px solid #c7d2fe'
+                    }}>
+                      <h5 style={{marginBottom:'12px', textTransform:'uppercase', fontSize:'0.85rem', letterSpacing:'1px', color:'#4338ca', fontWeight:'800'}}>🚀 Profile Strengthening Opportunities</h5>
+                      <ul style={{ margin: 0, paddingLeft: '20px', color: '#312e81', fontSize: '0.9rem', lineHeight: '1.7' }}>
+                        {(!results.profile?.category || results.profile?.category !== 'agriculture') ? <li><strong>Land Ownership:</strong> Registering agricultural land could unlock PM-Kisan and KCC subsidies.</li> : null}
+                        {(results.profile?.income > 0 && results.profile?.income < 800000 && results.profile?.caste === 'General') ? <li><strong>EWS Certification:</strong> Securing an EWS Certificate unlocks General category reservations up to ₹8L income.</li> : null}
+                        {(!results.profile?.income || results.profile?.income === 0) ? <li><strong>Income Verification:</strong> Officially verifiable income levels can unlock highly restricted EWS scholarships.</li> : null}
+                        {(results.profile?.age > 15 && results.profile?.age < 30) ? <li><strong>Skill Certification:</strong> Your age qualifies you for free placement-linked PMKVY training.</li> : null}
+                        {results.profile?.caste !== 'SC' && results.profile?.caste !== 'ST' ? <li><strong>Documentation:</strong> Ensure your foundational IDs (Aadhaar, Ration) are fully linked to avoid rejection.</li> : null}
+                      </ul>
+                    </div>
+
+                  </div>
+                </div>
+
+                {/* Scheme Conflict Module */}
+                {results.conflicts && results.conflicts.length > 0 && (
+                  <div style={{background: '#fff1f2', border: '1px solid #fecdd3', padding: '24px', borderRadius: '16px', marginBottom: '24px', boxShadow: 'var(--shadow-lg)'}}>
+                    <h3 style={{color: '#e11d48', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', fontSize: '1.4rem'}}>
+                      <span style={{background:'#f43f5e', color:'white', borderRadius:'50%', width:'32px', height:'32px', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'1.2rem'}}>⚠️</span> 
+                      Scheme Conflict Detected
+                    </h3>
+                    
+                    {results.conflicts.map((c, idx) => {
+                      const schemeToOpen = results.schemes.find(s => s.pdfSource === c.centralSource.pdf) || results.schemes[0];
+                      return (
+                        <div key={idx} style={{background:'white', padding:'20px', borderRadius:'12px', borderLeft:'5px solid #e11d48', marginBottom: idx === results.conflicts.length - 1 ? 0 : '20px', boxShadow: '0 2px 4px rgba(225,29,72,0.05)'}}>
+                          <h4 style={{color: '#be123c', marginBottom: '15px'}}>{c.title}</h4>
+                          
+                          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '15px', marginBottom: '20px'}}>
+                            <div style={{background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0'}}>
+                              <div style={{color: '#0f172a', fontWeight: 'bold', marginBottom: '5px'}}>🏛️ Central Policy Clause:</div>
+                              <div style={{fontSize: '0.85rem', color: '#475569'}}>{c.centralSource.pdf} <br/> {c.centralSource.clause} ({c.centralSource.page})</div>
+                              <p style={{fontSize: '0.85rem', fontStyle: 'italic', marginTop: '10px', color: '#334155', borderLeft: '3px solid #cbd5e1', paddingLeft: '10px'}}>"{c.centralSource.text}"</p>
+                            </div>
+                            <div style={{background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0'}}>
+                              <div style={{color: '#0f172a', fontWeight: 'bold', marginBottom: '5px'}}>📍 State Policy Clause:</div>
+                              <div style={{fontSize: '0.85rem', color: '#475569'}}>{c.stateSource.pdf} <br/> {c.stateSource.clause} ({c.stateSource.page})</div>
+                              <p style={{fontSize: '0.85rem', fontStyle: 'italic', marginTop: '10px', color: '#334155', borderLeft: '3px solid #cbd5e1', paddingLeft: '10px'}}>"{c.stateSource.text}"</p>
+                            </div>
+                          </div>
+                          
+                          <div style={{background: '#fcf8ff', padding: '16px', borderRadius: '8px', border: '1px solid #c7d2fe', marginBottom: '20px'}}>
+                            <strong style={{color: '#3730a3', display:'block', marginBottom:'5px'}}>💡 Resolution Strategy (How to Avail Benefits):</strong> 
+                            <span style={{fontSize: '0.95rem', color: '#312e81', lineHeight: '1.6'}}>{c.detail}</span>
+                          </div>
+                          
+                          <div style={{textAlign: 'right'}}>
+                            <button onClick={() => setSelectedScheme(schemeToOpen)} style={{background: '#e11d48', color: 'white', padding: '10px 24px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize:'0.9rem', transition:'background 0.2s'}}>
+                              Click for More Details (Docs & Links) ↗
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {results.top5 && results.top5.length > 0 && (
+                  <div className="card" style={{borderColor: 'var(--primary)', background: '#f8fafc', marginBottom: '2rem'}}>
+                    <h3 style={{color: 'var(--primary)', display:'flex', alignItems:'center', gap:'8px'}}>
+                      <span style={{fontSize:'1.4rem'}}>⭐</span> Top 5 Recommended Policies
+                    </h3>
+                    <p style={{fontSize:'0.9rem', color:'#64748b', marginBottom:'1.5rem'}}>
+                      AI-ranked based on Eligibility Match (40%), Need Relevance (30%), Benefit Value (20%), and Priority (10%). Diversity constraint applied.
+                    </p>
+                    <div className="grid-2">
+                      {results.top5.map((s, i) => (
+                        <div key={i} className="scheme-card" onClick={() => setSelectedScheme(s)} style={{border:'2px solid #e0e7ff', background:'white'}}>
+                          <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start'}}>
+                            <h4 style={{color:'#1e3a8a'}}>{i+1}. {s.title}</h4>
+                            <span style={{background:'#dbeafe', color:'#1e40af', padding:'4px 8px', borderRadius:'12px', fontSize:'0.75rem', fontWeight:'bold'}}>Score: {s.ai_score}</span>
+                          </div>
+                          <p style={{margin:'8px 0', fontSize:'0.9rem'}}><strong>Why Relevant:</strong> {s.ai_why_relevant}</p>
+                          <p style={{fontSize:'0.85rem', color:'#475569'}}>{s.summary}</p>
+                          <div className="tag-row"><span className="logic-tag">{s.category}</span><span className="logic-tag">📅 {s.deadline}</span></div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="card">
+                  <h3>{t.matchesTitle}</h3>
+                  <div className="grid-2">
+                    {results.schemes.map((s, i) => (
+                      <div key={i} className="scheme-card" onClick={() => setSelectedScheme(s)}>
+                        <h4>{s.title}</h4>
+                        <p>{s.summary}</p>
+                        {s.ministry && (
+                          <div style={{fontSize:'0.78rem', color:'#475569', marginTop:'8px', padding:'8px', background:'#f1f5f9', borderRadius:'6px'}}>
+                            <div>🏛️ {s.ministry}</div>
+                            <div>📞 <a href={'tel:' + s.helpline} style={{color:'#2563eb', textDecoration:'none'}}>{s.helpline}</a> &nbsp;|&nbsp; 📧 <a href={'mailto:' + s.email} style={{color:'#2563eb', textDecoration:'none'}}>{s.email}</a></div>
+                          </div>
+                        )}
+                        <div className="tag-row"><span className="logic-tag">{s.category}</span><span className="logic-tag">📅 {s.deadline}</span></div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {selectedScheme && (
+            <div className="modal-overlay" onClick={() => setSelectedScheme(null)}>
+              <div className="modal-content" onClick={e => e.stopPropagation()}>
+                <button className="modal-close" onClick={() => setSelectedScheme(null)}>✕</button>
+                <div style={{borderBottom:'2px solid #e2e8f0', paddingBottom:'10px', marginBottom:'15px'}}>
+                  <h2 style={{color: '#000080', fontSize:'1.7rem'}}>{selectedScheme.title} <span style={{fontSize:'0.9rem', color:'#64748b', fontWeight:'500'}}>({selectedScheme.docId})</span></h2>
+                </div>
+                
+                <div style={{background:'#f8fafc', padding:'15px', borderRadius:'8px', borderLeft:'4px solid #000080', marginBottom:'20px'}}>
+                  <h4 style={{marginBottom:'10px', color:'#0f172a'}}>Strict Eligibility Matches</h4>
+                  <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px', fontSize:'0.9rem'}}>
+                    <div><strong>📄 RAG Source:</strong> {selectedScheme.pdfSource}</div>
+                    <div><strong>⚖️ Legal Clause:</strong> {selectedScheme.clauseRef}</div>
+                    <div><strong>📑 Page No:</strong> {selectedScheme.pageRef}</div>
+                    <div><strong>🎯 Category/Field:</strong> {(selectedScheme.category || "General").toUpperCase()}</div>
+                    {selectedScheme.matchRules?.maxAcres && <div><strong>🌾 Acreage Limit:</strong> {selectedScheme.matchRules.maxAcres} Hectares/Acres</div>}
+                    <div style={{gridColumn:'1 / -1'}}><strong>⏳ Date & Expiry:</strong> <span style={{color:'#dc2626', fontWeight:'600'}}>{selectedScheme.deadline}</span></div>
+                  </div>
+                </div>
+
+                <div style={{marginBottom:'20px'}}>
+                  <h4 style={{marginBottom:'5px'}}>Short Explanation:</h4>
+                  <p style={{fontSize:'0.95rem', color:'#334155'}}>{selectedScheme.summary}</p>
+                  {selectedScheme.extractedText && (
+                    <blockquote style={{background:'#e0e7ff', padding:'10px', borderRadius:'6px', fontStyle:'italic', fontSize:'0.85rem', marginTop:'10px', borderLeft:'3px solid #4338ca'}}>
+                      "{selectedScheme.extractedText}"
+                    </blockquote>
+                  )}
+                </div>
+
+                <div style={{marginBottom:'20px'}}>
+                  <h4 style={{marginBottom:'5px'}}>Documents Required:</h4>
+                  <ul style={{marginLeft:'20px', fontSize:'0.9rem', color:'#334155'}}>
+                    {(selectedScheme.documents||[]).map((d,i)=><li key={i}>{d}</li>)}
+                  </ul>
+                </div>
+
+                {selectedScheme.ministry && (
+                  <div style={{background:'#eff6ff', padding:'15px', borderRadius:'8px', borderLeft:'4px solid #2563eb', marginBottom:'20px'}}>
+                    <h4 style={{marginBottom:'10px', color:'#1e40af'}}>📞 Ministry Helpline & Contact</h4>
+                    <div style={{display:'grid', gridTemplateColumns:'1fr', gap:'8px', fontSize:'0.9rem'}}>
+                      <div><strong>🏛️ Ministry:</strong> {selectedScheme.ministry}</div>
+                      <div><strong>📞 Helpline:</strong> <a href={'tel:' + selectedScheme.helpline} style={{color:'#2563eb'}}>{selectedScheme.helpline}</a> (Toll-Free)</div>
+                      <div><strong>📧 Email:</strong> <a href={'mailto:' + selectedScheme.email} style={{color:'#2563eb'}}>{selectedScheme.email}</a></div>
+                    </div>
+                  </div>
+                )}
+
+                <div style={{textAlign:'center', marginTop:'1rem'}}>
+                  <a href={selectedScheme.url} target="_blank" rel="noopener noreferrer" 
+                     style={{display:'inline-block', background:'#000080', color:'white', padding:'12px 24px', borderRadius:'8px', textDecoration:'none', fontWeight:'bold', fontSize:'1rem', transition:'0.2s', width:'100%'}}>
+                    Click for more details
+                  </a>
+                </div>
+              </div>
+            </div>
+          )}
+          <Chatbot schemes={initialSchemes} language={language} t={t} />
+        </div>
+      );
+    };
+
+    const AuthScreen = ({ onAuthSuccess }) => {
+      const [isLogin, setIsLogin] = useState(true);
+      const [email, setEmail] = useState('');
+      const [password, setPassword] = useState('');
+      const [error, setError] = useState('');
+
+      const handleAuth = (e) => {
+        e.preventDefault();
+        if (email === 'xyz@abc.com' && password === '123') {
+          const user = { id: '9872141569', identifier: email, isNew: false };
+          localStorage.setItem('yojnaai_sess', JSON.stringify(user));
+          onAuthSuccess(user);
+        } else if (!isLogin) {
+          const user = { id: Math.floor(1e9+Math.random()*9e8).toString(), identifier: email, isNew: true };
+          localStorage.setItem('yojnaai_sess', JSON.stringify(user));
+          onAuthSuccess(user);
+        } else {
+          setError('Invalid credentials (Try xyz@abc.com / 123)');
+        }
+      };
+
+      return (
+        <div className="auth-container">
+          <div className="auth-box">
+            <h2>Yojna<span>AI</span></h2>
+            <p>One Nation. One Dashboard.</p>
+            {error && <div style={{color:'red', marginBottom:'1rem'}}>{error}</div>}
+            <form onSubmit={handleAuth}>
+              <input className="auth-input" placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} required />
+              <input className="auth-input" type="password" placeholder="Password" value={password} onChange={e=>setPassword(e.target.value)} required />
+              <button className="auth-btn" type="submit">{isLogin ? 'Sign In' : 'Create Account'}</button>
+            </form>
+            <button className="auth-toggle" onClick={()=>setIsLogin(!isLogin)}>{isLogin ? 'Don\'t have an account? Sign Up' : 'Already have an account? Sign In'}</button>
+          </div>
+        </div>
+      );
+    };
+
+    const App = () => {
+      const [user, setUser] = useState(null);
+      const [schemes, setSchemes] = useState([]);
+      const [loading, setLoading] = useState(true);
+
+      useEffect(() => {
+        const saved = localStorage.getItem('yojnaai_sess');
+        if (saved) setUser(JSON.parse(saved));
+        fetch('http://localhost:5001/api/schemes').then(r=>r.json()).then(d=>setSchemes(d.schemes)).finally(()=>setLoading(false));
+      }, []);
+
+      if (loading) return <div className="spinner-container"><div className="spinner" /></div>;
+      return user ? <Dashboard user={user} onLogout={()=>{localStorage.removeItem('yojnaai_sess'); setUser(null);}} initialSchemes={schemes} /> : <AuthScreen onAuthSuccess={setUser} />;
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
