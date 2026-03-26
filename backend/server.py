@@ -119,75 +119,30 @@ def chat():
         
         if not api_key:
             lower = user_msg.lower()
-            if any(greeting in lower for greeting in ["hello", "hi", "hy", "hey", "नमस्ते"]):
-                return jsonify({"reply": "Hello! I am the YojnaAI Assistant. Please ask about a policy (e.g., 'farming', 'student', or 'business') and I will help you."})
-            
-            # Smart Offline Keyword Matcher (Tokenization & Synonym Scoring)
-            tokens = lower.split()
-            
-            synonyms = {
-                "student": ["education", "scholarship", "css", "vidyalaxmi", "university", "college", "school"],
-                "farm": ["agriculture", "kisan", "pmfby", "soil", "crop"],
-                "farmer": ["agriculture", "kisan", "pmfby", "soil", "crop"],
-                "business": ["startup", "mudra", "msme", "loan", "enterprise", "company"],
-                "women": ["matru", "sukanya", "mahila", "lady", "girl"],
-                "health": ["ayushman", "jay", "hospital", "medical", "healthcare", "treatment", "doctor"],
-                "house": ["pmay", "housing", "awas", "home", "shelter"],
-                "revenue": ["income", "tax", "ews", "finance", "subsidy", "grt", "money"],
-                "immigration": ["nri", "visa", "overseas", "abroad", "pravasi", "immigrant", "worker"],
-                "caste": ["sc", "st", "obc", "reservation", "minority", "tribe"],
-                "pension": ["elderly", "senior", "old", "retire", "vridha"],
-                "disability": ["handicap", "divyang", "pwd", "differently"],
-                "food": ["ration", "pds", "annapurna", "grain", "wheat", "rice"],
-                "land": ["plot", "acre", "hectare", "property", "bhumi"]
-            }
-            
-            search_terms = set(tokens)
-            for token in tokens:
-                for syn, mapped_terms in synonyms.items():
-                    if syn in token:
-                        search_terms.update(mapped_terms)
-                        
-            best_schemes = []
-            
-            for s in schemes:
-                score = 0
-                s_title = s.get("title", "").lower()
-                s_cat = s.get("category", "").lower()
-                s_sum = s.get("summary", "").lower()
-                
-                for term in search_terms:
-                    if len(term) < 3: continue
-                    if term in s_title: score += 3
-                    if term in s_cat: score += 2
-                    if term in s_sum: score += 1
-                    
-                if score > 0:
-                    best_schemes.append((score, s))
-            
-            best_schemes.sort(key=lambda x: x[0], reverse=True)
-            top = best_schemes[:3]
-                    
-            if top:
-                reply_parts = []
-                for i, (sc, scheme) in enumerate(top, 1):
-                    reply_parts.append(f"{i}. **{scheme.get('title', 'Policy')}**\n{scheme.get('summary', '')}\nLink: {scheme.get('url', 'N/A')}")
-                return jsonify({"reply": "\n\n".join(reply_parts)})
+            if any(w in lower for w in ["how", "use", "help", "guide", "what", "eligibility", "check", "scan"]):
+                return jsonify({"reply": "To find your eligibility: fill out your details (Age, Income, State, Need Category, Caste) on the dashboard and click the 'Analyze Eligibility' button."})
+            elif any(w in lower for w in ["mic", "voice", "speak", "audio"]):
+                return jsonify({"reply": "Click the Microphone (🎙) icon next to the text box. Speak your age, income, and needs in your selected language, and release the button to analyze."})
+            elif any(w in lower for w in ["language", "translate", "hindi", "gujarati", "marathi", "bengali"]):
+                return jsonify({"reply": "Use the language dropdown at the top of the screen to switch the whole site into your preferred language."})
+            elif any(greeting in lower for greeting in ["hello", "hi", "hy", "hey", "नमस्ते"]):
+                return jsonify({"reply": "Hello! I am the YojanaAI Navigator. Try asking 'How do I check my eligibility?' or 'How do I use the microphone?'"})
             else:
-                return jsonify({"reply": "I couldn't find an exact matching policy for that. Try keywords like 'farmer', 'student', 'business', 'housing', 'healthcare', 'pension', or 'food'."})
-
-        # 2. GEMINI AI EXECUTION
+                return jsonify({"reply": "I am the offline Site Navigator. Please ask me how to use this website (e.g., 'help', 'microphone', 'eligibility'). (Note: To use the advanced Navigation AI, please add a Gemini API Key in Settings)."})
+                
+        # GEMINI AI EXECUTION
         import google.generativeai as genai
         genai.configure(api_key=api_key)
         
-        context = json.dumps(schemes[:50], ensure_ascii=False)
-        
-        # 3. STRICT POLICY OPTIMIZATION
         system_instruction = (
-            "You are the YojnaAI AI assistant. STRICT REGULATION: You must ONLY answer questions related to Indian government schemes, welfare, and policies. "
-            "If the user asks a general question (e.g., 'hi', 'how are you', 'what is the weather', 'who won the match', math equations, etc.), you MUST completely decline answering and say exactly: "
-            "'I am the YojnaAI Assistant. I am strictly programmed to assist you only with Indian Government Policies and Welfare Schemes. How can I help you with policies today?' "
-            f"If it is a valid policy query, use the following Indian government schemes context exclusively to answer: {context}. Speak directly, concisely, and professionally without hallucinating."
+            "You are the YojanaAI Navigator, a website support assistant. Your SOLE purpose is to help citizens understand how to use this website to find welfare schemes. "
+            "You MUST NOT suggest or explain specific Indian government policies or welfare schemes directly. "
+            "Instead, instruct users on how to use the website's features: "
+            "1. To find policies, tell them to fill out their details (Age, Income, State, Need Category, Caste) and click the 'Analyze Eligibility' button.\n"
+            "2. To type or speak in their local language, tell them they can use the language dropdown at the top, and click the Microphone icon.\n"
+            "3. To read policy details, tell them to click on any scheme card after analysis.\n"
+            "If a user asks about a specific scheme (e.g., 'What is PM Kisan?'), decline politely and say: 'Please type your details in the main text box and click Analyze Eligibility to automatically match that scheme.' "
+            "Keep your answers extremely concise, friendly, and strictly about website navigation."
         )
         
         model = genai.GenerativeModel(

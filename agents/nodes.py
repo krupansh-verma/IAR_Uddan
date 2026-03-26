@@ -16,12 +16,23 @@ def intake_node(state: PolicyPilotState) -> Dict[str, Any]:
     if "[INCOME: 5L]" in user_input: profile["incomeVal"] = 500000
     if "[CASTE: SC]" in user_input: profile["caste"] = "SC"
     
-    print(f"Parsed Profile: {json.dumps(profile, indent=2)}")
+    # Check for validation errors
+    if profile.get("validationError"):
+        print(f"⚠️ VALIDATION ERROR: {profile['validationError']}")
+    else:
+        print(f"Parsed Profile: {json.dumps(profile, indent=2, ensure_ascii=False)}")
+    
     return {"profile": profile}
 
 def retrieval_node(state: PolicyPilotState) -> Dict[str, Any]:
     print("--- RETRIEVAL AGENT ---")
     profile = state.get("profile", {})
+    
+    # Short-circuit if validation error
+    if profile.get("validationError"):
+        print("⚠️ Skipping retrieval — invalid input detected.")
+        return {"retrieved_clauses": []}
+    
     schemes = load_schemes()
     
     # Filter schemes based on broad category if present
@@ -46,6 +57,25 @@ def eligibility_node(state: PolicyPilotState) -> Dict[str, Any]:
     print("--- ELIGIBILITY AGENT ---")
     user_input = state.get("user_input", "")
     profile = state.get("profile", {})
+    
+    # Short-circuit if validation error
+    if profile.get("validationError"):
+        print(f"⚠️ 0 schemes matched — {profile['validationError']}")
+        return {
+            "eligibility_results": [],
+            "analysis_output": {
+                "profile": profile,
+                "schemes": [],
+                "conflicts": [],
+                "warnings": [profile["validationError"]],
+                "improvements": [],
+                "summary": profile["validationError"],
+                "top5": [],
+                "totalSchemesSearched": 0,
+                "matchCount": 0,
+                "validationError": profile["validationError"]
+            }
+        }
     
     # Use the REAL eligibility engine
     analysis = analyze(
@@ -91,9 +121,20 @@ def response_node(state: PolicyPilotState) -> Dict[str, Any]:
     analysis = state.get("analysis_output", {})
     results = state.get("eligibility_results", [])
     conflicts = state.get("conflicts", [])
+    profile = state.get("profile", {})
     
-    output = f"✅ Eligibility Confirmed for {len(results)} schemes.\n"
-    if results:
+    # Handle validation errors
+    if profile.get("validationError") or analysis.get("validationError"):
+        error_msg = profile.get("validationError") or analysis.get("validationError")
+        output = f"🚫 Input Rejected: {error_msg}\n"
+        output += "Please provide valid citizen information to analyze eligibility.\n"
+        return {"final_output": output}
+    
+    if len(results) == 0:
+        output = "ℹ️ No schemes matched your profile.\n"
+        output += "Try providing more details about your age, occupation, state, and income.\n"
+    else:
+        output = f"✅ Eligibility Confirmed for {len(results)} schemes.\n"
         output += "Matched policies: " + ", ".join([r["scheme_name"] for r in results]) + "\n"
     
     if conflicts:

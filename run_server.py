@@ -4,9 +4,10 @@ import subprocess
 
 def find_python():
     # Try venv first
-    venv_py = os.path.join(os.getcwd(), "venv", "Scripts", "python.exe")
-    if os.path.exists(venv_py):
-        return venv_py
+    venv_py_win = os.path.join(os.getcwd(), "venv", "Scripts", "python.exe")
+    
+    if os.path.exists(venv_py_win):
+        return venv_py_win
     
     # Try common aliases
     for cmd in ["py", "python", "python3"]:

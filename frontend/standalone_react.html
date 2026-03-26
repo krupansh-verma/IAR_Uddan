@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#2563eb">
-  <title>YojnaAI - All-India Multilingual</title>
+  <title>YojanaAI - All-India Multilingual</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -72,8 +72,9 @@
     .btn-primary { width: 100%; padding: 1rem; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 1rem; }
     .lang-selector { position: absolute; top: -1.75rem; right: 0; background: white; border: 1px solid #cbd5e1; border-radius: 8px; padding: 6px; }
 
-    /* Alert Banner */
-    .alert-banner { background: linear-gradient(135deg, #4338ca 0%, #1e1b4b 100%); color: white; padding: 1rem 1.5rem; border-radius: 12px; margin-bottom: 2rem; display: flex; align-items: center; gap: 1.5rem; position: relative; }
+    /* Alert Banner (Carousel) */
+    .alert-banner { background: linear-gradient(135deg, #4338ca 0%, #1e1b4b 100%); color: white; border-radius: 12px; margin-bottom: 2rem; position: relative; overflow: hidden; min-height: 140px; }
+    .alert-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; gap: 1.5rem; padding: 1.25rem 1.5rem; box-sizing: border-box; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s ease; }
     
     @keyframes ring {
       0% { transform: rotate(0); }
@@ -154,6 +155,13 @@
     .spinner-container { display: flex; justify-content: center; margin: 2rem 0; }
     .spinner { width: 30px; height: 30px; border: 3px solid #e2e8f0; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Hide Google Translate Widget & Top Bar */
+    .goog-te-banner-frame.skiptranslate { display: none !important; }
+    body { top: 0px !important; }
+    #google_translate_element { display: none !important; }
+    .VIpgJd-ZVi9od-ORHb-OEVmcd { display: none !important; }
+    .skiptranslate > iframe { display: none !important; }
   </style>
 </head>
 
@@ -169,11 +177,11 @@
         analyzeBtn: "Analyze Eligibility", processing: "Processing...", successTitle: "Profile Verified", warningTitle: "Profile Alerts",
         matchesBadge: "Policy Match", matchesTitle: "Eligible Schemes Found", noMatches: "No active schemes match your current profile.", 
         dashAnnualIncome: "💰 Annual Income (₹)", dashState: "📍 State", dashCategory: "🏷️ Need Category", dashCaste: "🏷️ Caste",
-        summaryTitle: "YojnaAI Analysis", logoutBtn: "Logout",
+        summaryTitle: "YojanaAI Analysis", logoutBtn: "Logout",
         tagAge: "Age: ", tagState: "State: ", tagIncome: "Income: ", tagNone: "None",
-        authHeading1: "Yojna", authHeading2: "AI",
+        authHeading1: "Yojana", authHeading2: "AI",
         casteGeneral: "General", casteOBC: "OBC", casteSCST: "SC/ST", casteEWS: "EWS",
-        botGreeting: "Namaste! How can I help you today?", botFallback: "I'm looking for relevant policies. Try asking about 'farming', 'students', or 'pension'.", botError: "I encountered an error understanding your query."
+        botGreeting: "Namaste! Need help navigating YojanaAI?", botFallback: "I'm a site navigator. Try asking: 'How do I scan for schemes?' or 'How do I use voice typing?'", botError: "I encountered an error understanding your query."
       },
       hi: {
         titleSub: "AI कल्याण दावा प्रणाली", intakeBadge: "डेटा इनटेक", intakeLabel: "विवरण दर्ज करें",
@@ -184,7 +192,7 @@
         tagAge: "आयु: ", tagState: "राज्य: ", tagIncome: "आय: ", tagNone: "कोई नहीं",
         authHeading1: "योजना", authHeading2: "AI",
         casteGeneral: "सामान्य", casteOBC: "ओबीसी", casteSCST: "एससी/एसटी", casteEWS: "ईडब्ल्यूएस",
-        botGreeting: "नमस्ते! मैं आज आपकी कैसे मदद कर सकता हूँ?", botFallback: "मैं प्रासंगिक नीतियों की तलाश कर रहा हूं। 'खेती', 'छात्रों', या 'पेंशन' के बारे में पूछने का प्रयास करें।", botError: "मुझे आपकी क्वेरी समझने में त्रुटि हुई।"
+        botGreeting: "नमस्ते! क्या आपको योजनाAI का उपयोग करने में मदद चाहिए?", botFallback: "मैं एक साइट नेविगेटर हूँ। पूछने का प्रयास करें: 'मैं योजनाओं को कैसे स्कैन करूँ?'", botError: "मुझे आपकी क्वेरी समझने में त्रुटि हुई।"
       },
       gu: { 
         titleSub: "AI કલ્યાણ દાવો સિસ્ટમ", intakeBadge: "ડેટા ઇન્ટેક", intakeLabel: "વિગતો દાખલ કરો",
@@ -195,7 +203,7 @@
         tagAge: "ઉંમર: ", tagState: "રાજ્ય: ", tagIncome: "આવક: ", tagNone: "કોઈ નહિ",
         authHeading1: "યોજના", authHeading2: "AI",
         casteGeneral: "સામાન્ય", casteOBC: "OBC", casteSCST: "SC/ST", casteEWS: "EWS",
-        botGreeting: "નમસ્તે! હું આજે તમારી કેવી રીતે મદદ કરી શકું?", botFallback: "હું સંબંધિત નીતિઓ શોધી રહ્યો છું. 'ખેતી', 'વિદ્યાર્થીઓ' અથવા 'પેન્શન' વિશે પૂછવાનો પ્રયાસ કરો.", botError: "ભૂલ આવી છે."
+        botGreeting: "નમસ્તે! શું તમને યોજનાAI નો ઉપયોગ કરવામાં મદદ જોઈએ છે?", botFallback: "હું એક સાઇટ નેવિગેટર છું. પૂછવાનો પ્રયાસ કરો: 'હું યોજનાઓ કેવી રીતે સ્કેન કરું?'", botError: "ભૂલ આવી છે."
       },
       mr: {
         titleSub: "AI कल्याण दावा प्रणाली", intakeBadge: "डेटा इनटेक", intakeLabel: "तपशील प्रविष्ट करा",
@@ -206,7 +214,7 @@
         tagAge: "वय: ", tagState: "राज्य: ", tagIncome: "उत्पन्न: ", tagNone: "काहीही नाही",
         authHeading1: "योजना", authHeading2: "AI",
         casteGeneral: "सामान्य", casteOBC: "ओबीसी", casteSCST: "एससी/एसटी", casteEWS: "ईडब्ल्यूएस",
-        botGreeting: "नमस्कार! मी आज तुमची कशी मदत करू शकेन?", botFallback: "मी संबंधित धोरणे शोधत आहे. 'शेती', 'विद्यार्थी' किंवा 'पेन्शन' बद्दल विचारून पहा.", botError: "मला समजण्यास त्रुटी आली."
+        botGreeting: "नमस्कार! तुम्हाला योजनाAI वापरण्यासाठी मदत हवी आहे का?", botFallback: "मी एक साइट नॅव्हिगेटर आहे. असे विचारून पहा: 'मी योजना कशा स्कॅन करू?'", botError: "मला समजण्यास त्रुटी आली."
       },
       ta: {
         titleSub: "AI நல உரிமை கோரல் அமைப்பு", intakeBadge: "தரவு உள்ளீடு", intakeLabel: "விவரங்களை உள்ளிடவும்",
@@ -217,7 +225,7 @@
         tagAge: "வயது: ", tagState: "மாநிலம்: ", tagIncome: "வருமானம்: ", tagNone: "ஏதுமில்லை",
         authHeading1: "யோஜனா", authHeading2: "AI",
         casteGeneral: "பொது", casteOBC: "OBC", casteSCST: "SC/ST", casteEWS: "EWS",
-        botGreeting: "வணக்கம்! இன்று நான் உங்களுக்கு எப்படி உதவ முடியும்?", botFallback: "நான் கொள்கைகளைத் தேடுகிறேன். 'விவசாயம்' பற்றி கேட்கவும்.", botError: "பிழை ஏற்பட்டது."
+        botGreeting: "வணக்கம்! யோஜனாAI ஐப் பயன்படுத்த உங்களுக்கு உதவி தேவையா?", botFallback: "நான் ஒரு தள வழிகாட்டி. இதைக் கேட்கவும்: 'திட்டங்களை எவ்வாறு தேடுவது?'", botError: "பிழை ஏற்பட்டது."
       },
       te: {
         titleSub: "AI సంక్షేమ దావా వ్యవస్థ", intakeBadge: "డేటా ఇన్‌టేక్", intakeLabel: "వివరాలను నమోదు చేయండి",
@@ -228,7 +236,7 @@
         tagAge: "వయస్సు: ", tagState: "రాష్ట్రం: ", tagIncome: "ఆదాయం: ", tagNone: "ఏమీ లేదు",
         authHeading1: "యోజనా", authHeading2: "AI",
         casteGeneral: "జనరల్", casteOBC: "ఓబీసీ", casteSCST: "ఎస్సీ/ఎస్టీ", casteEWS: "ఈడబ్ల్యూఎస్",
-        botGreeting: "నమస్తే! నేను ఎలా సహాయపడగలను?", botFallback: "నేను విధానాల కోసం చూస్తున్నాను. 'వ్యవసాయం' గురించి అడగండి.", botError: "లోపం ఏర్పడింది."
+        botGreeting: "నమస్తే! యోజనాAI ని ఉపయోగించడంలో మీకు సహాయం కావాలా?", botFallback: "నేను సైట్ నావిగేటర్‌ని. ఇలా అడగడానికి ప్రయత్నించండి: 'నేను పథకాలను ఎలా స్కాన్ చేయాలి?'", botError: "లోపం ఏర్పడింది."
       },
       pa: {
         titleSub: "AI ਭਲਾਈ ਦਾਅਵਾ ਪ੍ਰਣਾਲੀ", intakeBadge: "ਡੇਟਾ ਇਨਟੇਕ", intakeLabel: "ਵੇਰਵੇ ਦਰਜ ਕਰੋ",
@@ -239,7 +247,7 @@
         tagAge: "ਉਮਰ: ", tagState: "ਰਾਜ: ", tagIncome: "ਆਮਦਨ: ", tagNone: "ਕੁਝ ਨਹੀਂ",
         authHeading1: "ਯੋਜਨਾ", authHeading2: "AI",
         casteGeneral: "ਜਨਰਲ", casteOBC: "ਓਬੀਸੀ", casteSCST: "ਐਸਸੀ/ਐਸਟੀ", casteEWS: "ਈਡਬਲਯੂਐਸ",
-        botGreeting: "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ! ਅੱਜ ਮੈਂ ਤੁਹਾਡੀ ਕਿਵੇਂ ਮਦਦ ਕਰ ਸਕਦਾ ਹਾਂ?", botFallback: "ਮੈਂ ਨੀਤੀਆਂ ਲੱਭ ਰਿਹਾ ਹਾਂ। 'ਖੇਤੀ' ਬਾਰੇ ਪੁੱਛੋ।", botError: "ਗਲਤੀ ਆਈ ਹੈ।"
+        botGreeting: "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ! ਕੀ ਤੁਹਾਨੂੰ ਯੋਜਨਾAI ਵਰਤਣ ਵਿੱਚ ਮਦਦ ਚਾਹੀਦੀ ਹੈ?", botFallback: "ਮੈਂ ਇੱਕ ਸਾਈਟ ਨੈਵੀਗੇਟਰ ਹਾਂ। ਇਹ ਪੁੱਛਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ: 'ਮੈਂ ਸਕੀਮਾਂ ਕਿਵੇਂ ਲੱਭਾਂ?'", botError: "ਗਲਤੀ ਆਈ ਹੈ।"
       },
       bn: {
         titleSub: "AI কল্যাণ দাবি সিস্টেম", intakeBadge: "ডেটা ইনটেক", intakeLabel: "বিবরণ লিখুন",
@@ -250,7 +258,7 @@
         tagAge: "বয়স: ", tagState: "রাজ្យ: ", tagIncome: "আয়: ", tagNone: "কিছুই না",
         authHeading1: "যোজনা", authHeading2: "AI",
         casteGeneral: "সাধারণ", casteOBC: "ওবিসি", casteSCST: "এসসি/এসটি", casteEWS: "ইডাব্লুএস",
-        botGreeting: "নমস্কার! আমি কীভাবে সাহায্য করতে পারি?", botFallback: "আমি নীতি খুঁজছি। 'কৃষি' সম্পর্কে জিজ্ঞাসা করুন।", botError: "একটি ত্রুটি ঘটেছে।"
+        botGreeting: "নমস্কার! আপনি কি যোজনাAI ব্যবহার করতে সহায়তা চান?", botFallback: "আমি একজন সাইট নেভিগেটর। এইগুলো জিজ্ঞাসা করে দেখতে পারেন: 'আমি কীভাবে স্কিমগুলি খুঁজব?'", botError: "একটি ত্রুটি ঘটেছে।"
       }
     };
 
@@ -317,7 +325,7 @@
             <div className="chatbot-window" style={{ display: 'flex', flexDirection: 'column' }}>
               <div className="chatbot-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
-                  <h4>YojnaAI Assistant</h4>
+                  <h4>YojanaAI Assistant</h4>
                 </div>
                 <div>
                   <button onClick={() => setIsOpen(false)} style={{background:'transparent',border:'none',color:'white',fontSize:'1.2rem',cursor:'pointer'}}>✕</button>
@@ -342,6 +350,35 @@
 
 
     const Dashboard = ({ user, onLogout, initialSchemes = [] }) => {
+      const FEATURED_ALERTS = [
+        {
+          badge: "NEW", title: "PM Surya Ghar Muft Bijli Yojana",
+          desc: "Up to 300 units free electricity per month & ₹78,000 solar subsidy.",
+          image: "assets/indian_industries_bg.png",
+          scheme: {title:"PM Surya Ghar: Muft Bijli Yojana 2026", summary:"Solar rooftop subsidy up to ₹78,000 and 300 units of free electricity monthly.", documents:['Aadhaar','Electricity Bill','Bank Passbook'], url:"https://pmsuryaghar.gov.in", docId:"ENG-SGM-26", pdfSource:"PMSuryaGhar_Guidelines.pdf", clauseRef:"Section 1", pageRef:"Page 2", category:"housing", deadline:"Ongoing 2026"}
+        },
+        {
+          badge: "HOT", title: "Lakhpati Didi Yojana 2026",
+          desc: "Empowering 3 Crore rural women with ₹1 Lakh+ annual income.",
+          image: "assets/indian_children_fed.png",
+          scheme: {title:"Lakhpati Didi Yojana 2026", summary:"Financial empowerment targeting ₹1 Lakh+ minimum annual income for SHG women.", documents:['Aadhaar','SHG Registration'], url:"https://lakhpatididi.gov.in", docId:"EMP-LD-26", pdfSource:"Lakhpati_Didi_Guidelines.pdf", clauseRef:"Section 3", pageRef:"Page 4", category:"employment", deadline:"Ongoing 2026"}
+        },
+        {
+          badge: "URGENT", title: "Namo Drone Didi Scheme",
+          desc: "Providing agricultural drones to Women SHGs for farm modernization.",
+          image: "assets/happy_indian_farmers.png",
+          scheme: {title:"Namo Drone Didi Scheme", summary:"Providing 15,000 agricultural drones to Women Self Help Groups (SHGs) under PMKVY.", documents:['Aadhaar','SHG Certificate','Land Record'], url:"https://agricoop.gov.in", docId:"AGR-NDD-26", pdfSource:"NamoDroneDidi.pdf", clauseRef:"Section 2", pageRef:"Page 1", category:"agriculture", deadline:"Apply anytime"}
+        }
+      ];
+
+      const [alertIndex, setAlertIndex] = useState(0);
+      useEffect(() => {
+        const timer = setInterval(() => {
+          setAlertIndex(prev => (prev + 1) % FEATURED_ALERTS.length);
+        }, 5000);
+        return () => clearInterval(timer);
+      }, []);
+
       const [language, setLanguage] = useState("en");
       const t = TRANSLATIONS[language];
       const [inputText, setInputText] = useState("I am a 45-year-old farmer in Gujarat.");
@@ -376,7 +413,8 @@
           const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
           if (!Speech) return alert("Browser too old.");
           const rec = new Speech();
-          rec.lang = language === 'hi' ? 'hi-IN' : 'en-IN';
+          const langMap = { en: 'en-IN', hi: 'hi-IN', gu: 'gu-IN', mr: 'mr-IN', ta: 'ta-IN', te: 'te-IN', pa: 'pa-IN', bn: 'bn-IN' };
+          rec.lang = langMap[language] || 'en-IN';
           rec.onresult = (e) => setInputText(prev => prev + " " + e.results[0][0].transcript);
           rec.onend = () => setIsRecording(false);
           rec.start();
@@ -390,16 +428,37 @@
           <div className="user-header-pill">🛡 UID: {user.id} <button className="logout-btn" onClick={onLogout}>logout</button></div>
           <div className="container">
             <div className="alert-banner">
-              <div className="alert-icon-ring">🔔</div>
-              <div className="alert-content">
-                <div className="alert-badge">NEW</div>
-                <div className="alert-title">PM-Vidyalaxmi Scholarship 2024</div>
-                <p style={{fontSize:'0.85rem', opacity:0.9}}>Education loans up to ₹10 Lakhs with interest subsidies.</p>
-                <div className="alert-actions"><button className="alert-cta" onClick={() => setSelectedScheme({title:"PM-Vidyalaxmi Scholarship 2024", summary:"Education loan scheme with interest subsidies up to ₹10 Lakhs.", documents:['Aadhaar','Marksheet','Income Certificate'], url:"https://pmvidyalaxmi.gov.in", docId:"EDU-VLX-24", pdfSource:"PM_Vidyalaxmi_Guidelines.pdf", clauseRef:"Section 2", pageRef:"Page 1", category:"education", deadline:"Dec 31, 2024"})}>Apply Now</button></div>
-              </div>
+              {FEATURED_ALERTS.map((alert, idx) => (
+                <div key={idx} className="alert-slide" style={{
+                  transform: `translateY(${(idx - alertIndex) * 100}%)`,
+                  opacity: idx === alertIndex ? 1 : 0,
+                  pointerEvents: idx === alertIndex ? 'auto' : 'none'
+                }}>
+                  {alert.image ? (
+                    <img src={alert.image} style={{width: '60px', height: '60px', borderRadius: '10px', objectFit: 'cover', flexShrink: 0, border: '2px solid rgba(255,255,255,0.3)'}} />
+                  ) : (
+                    <div className="alert-icon-ring" style={{flexShrink: 0}}>🔔</div>
+                  )}
+                  <div className="alert-content" style={{flexGrow: 1}}>
+                    <div className="alert-badge">{alert.badge}</div>
+                    <div className="alert-title">{alert.title}</div>
+                    <p style={{fontSize:'0.85rem', opacity:0.9, marginTop:'0.2rem', marginBottom: '0.4rem'}}>{alert.desc}</p>
+                    <div className="alert-actions"><button className="alert-cta" onClick={() => setSelectedScheme(alert.scheme)}>Apply Now</button></div>
+                  </div>
+                </div>
+              ))}
             </div>
 
-            <select className="lang-selector" onChange={e => setLanguage(e.target.value)} value={language}>
+            <select className="lang-selector" onChange={(e) => {
+              const newLang = e.target.value;
+              setLanguage(newLang);
+              
+              const gtSelect = document.querySelector('.goog-te-combo');
+              if (gtSelect) {
+                gtSelect.value = newLang;
+                gtSelect.dispatchEvent(new Event('change'));
+              }
+            }} value={language}>
               <option value="en">English</option>
               <option value="hi">हिंदी</option>
               <option value="gu">ગુજરાતી</option>
@@ -411,7 +470,7 @@
             </select>
 
             <header style={{textAlign: 'center', marginBottom: '2rem', marginTop: '1rem'}}>
-              <h1 style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'15px', fontSize: '3rem', color: '#000080', textShadow: '0 2px 4px rgba(0,0,0,0.1)', fontWeight: '800'}}>
+              <h1 className="notranslate" style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'15px', fontSize: '3rem', color: '#000080', textShadow: '0 2px 4px rgba(0,0,0,0.1)', fontWeight: '800'}}>
                 <img src="assets/indian_emblem_logo_1774346812765.png" style={{height:'70px'}} />
                 {t.authHeading1}<span style={{color: '#FF9933'}}>{t.authHeading2}</span>
               </h1>
@@ -438,11 +497,11 @@
             <div className="card" style={{borderTop: '6px solid #FF9933', borderBottom: '6px solid #138808', boxShadow: '0 8px 32px rgba(0,0,0,0.1)'}}>
               <span className="badge" style={{background: '#000080', color: 'white', padding: '0.4rem 1rem', fontSize: '0.85rem'}}>{t.intakeBadge}</span>
               <div className="textarea-wrapper">
-                <textarea value={inputText} onChange={e => setInputText(e.target.value)} placeholder="Describe your situation..." style={{borderColor: '#FF9933'}} />
+                <textarea translate="no" value={inputText} onChange={e => setInputText(e.target.value)} placeholder="Describe your situation..." style={{borderColor: '#FF9933'}} />
                 <button className={`mic-button ${isRecording ? 'recording' : ''}`} onClick={toggleMic}>🎙</button>
               </div>
               <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(180px, 1fr))', gap:'1rem', marginTop:'1.5rem'}}>
-                <div><label>{t.dashAnnualIncome}</label><input className="auth-input" value={income} onChange={e => setIncome(e.target.value)} /></div>
+                <div><label>{t.dashAnnualIncome}</label><input translate="no" className="auth-input" value={income} onChange={e => setIncome(e.target.value)} /></div>
                 <div><label>{t.dashState}</label>
                   <select className="auth-input" value={state} onChange={e => setState(e.target.value)}>
                     <option value="">All States</option>
@@ -536,6 +595,62 @@
                     </div>
 
                   </div>
+
+                  {/* Missing Documents Section */}
+                  {results.missingDocuments && results.missingDocuments.length > 0 && (
+                    <div style={{
+                      marginTop: '24px',
+                      background: 'rgba(255, 251, 235, 0.85)',
+                      padding: '24px',
+                      borderRadius: '16px',
+                      border: '1px solid #fde68a'
+                    }}>
+                      <h5 style={{marginBottom:'16px', textTransform:'uppercase', fontSize:'0.85rem', letterSpacing:'1px', color:'#92400e', fontWeight:'800', display:'flex', alignItems:'center', gap:'8px'}}>
+                        📋 Missing Documents — Action Required
+                      </h5>
+                      <p style={{fontSize:'0.85rem', color:'#78350f', marginBottom:'16px', lineHeight:'1.6'}}>
+                        The following documents are typically required to apply for your matched schemes. Click each card to see how to obtain them.
+                      </p>
+                      <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(280px, 1fr))', gap:'16px'}}>
+                        {results.missingDocuments.map((doc, idx) => (
+                          <div key={idx} style={{
+                            background: 'white',
+                            borderRadius: '12px',
+                            border: '1px solid #fcd34d',
+                            overflow: 'hidden',
+                            boxShadow: '0 2px 8px rgba(146,64,14,0.08)',
+                            transition: 'transform 0.2s, box-shadow 0.2s',
+                            cursor: 'pointer'
+                          }}
+                          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(146,64,14,0.15)'; }}
+                          onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(146,64,14,0.08)'; }}
+                          >
+                            <div style={{background:'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', color:'white', padding:'12px 16px', display:'flex', alignItems:'center', gap:'10px'}}>
+                              <span style={{fontSize:'1.5rem'}}>{doc.icon}</span>
+                              <div>
+                                <div style={{fontWeight:'700', fontSize:'0.95rem'}}>{doc.document}</div>
+                                <a href={doc.url} target="_blank" rel="noopener noreferrer" style={{color:'#fef3c7', fontSize:'0.75rem', textDecoration:'underline'}}>{doc.url}</a>
+                              </div>
+                            </div>
+                            <div style={{padding:'14px 16px'}}>
+                              <div style={{fontSize:'0.8rem', fontWeight:'700', color:'#92400e', textTransform:'uppercase', marginBottom:'8px', letterSpacing:'0.5px'}}>How to Get It</div>
+                              <ol style={{margin:0, paddingLeft:'18px', fontSize:'0.82rem', color:'#451a03', lineHeight:'1.7'}}>
+                                {doc.steps.map((step, si) => <li key={si}>{step}</li>)}
+                              </ol>
+                              <div style={{marginTop:'12px', borderTop:'1px solid #fde68a', paddingTop:'10px'}}>
+                                <div style={{fontSize:'0.75rem', fontWeight:'700', color:'#92400e', textTransform:'uppercase', marginBottom:'6px'}}>Available Methods</div>
+                                <div style={{display:'flex', gap:'6px', flexWrap:'wrap'}}>
+                                  {doc.methods.map((m, mi) => (
+                                    <span key={mi} style={{background:'#fef3c7', color:'#92400e', padding:'3px 10px', borderRadius:'99px', fontSize:'0.72rem', fontWeight:'600', border:'1px solid #fde68a'}}>{m}</span>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Scheme Conflict Module */}
@@ -694,10 +809,14 @@
       const [email, setEmail] = useState('');
       const [password, setPassword] = useState('');
       const [error, setError] = useState('');
+      const [showGooglePopup, setShowGooglePopup] = useState(false);
+      const [gEmail, setGEmail] = useState('');
+      const [gPassword, setGPassword] = useState('');
+      const [gError, setGError] = useState('');
 
       const handleAuth = (e) => {
         e.preventDefault();
-        if (email === 'xyz@abc.com' && password === '123') {
+        if (email === 'xyz@gmail.com' && password === '123') {
           const user = { id: '9872141569', identifier: email, isNew: false };
           localStorage.setItem('yojnaai_sess', JSON.stringify(user));
           onAuthSuccess(user);
@@ -706,23 +825,112 @@
           localStorage.setItem('yojnaai_sess', JSON.stringify(user));
           onAuthSuccess(user);
         } else {
-          setError('Invalid credentials (Try xyz@abc.com / 123)');
+          setError('Invalid credentials (Try xyz@gmail.com / 123)');
+        }
+      };
+
+      const handleGoogleAuth = (e) => {
+        e.preventDefault();
+        if (gEmail === 'xyz@gmail.com' && gPassword === '123') {
+          const user = { id: 'G-' + Math.floor(1e9+Math.random()*9e8).toString(), identifier: gEmail, isNew: false, provider: 'google' };
+          localStorage.setItem('yojnaai_sess', JSON.stringify(user));
+          onAuthSuccess(user);
+        } else {
+          setGError('Invalid Google credentials (Use xyz@gmail.com / 123)');
         }
       };
 
       return (
         <div className="auth-container">
           <div className="auth-box">
-            <h2>Yojna<span>AI</span></h2>
+            <h2 className="notranslate">Yojana<span>AI</span></h2>
             <p>One Nation. One Dashboard.</p>
-            {error && <div style={{color:'red', marginBottom:'1rem'}}>{error}</div>}
+            <p style={{fontSize:'0.78rem', color:'#64748b', marginTop:'4px', background:'#f1f5f9', padding:'6px 12px', borderRadius:'8px'}}>🔑 Login: <strong>xyz@gmail.com</strong> / <strong>123</strong></p>
+            {error && <div style={{color:'red', marginBottom:'1rem', fontSize:'0.85rem'}}>{error}</div>}
             <form onSubmit={handleAuth}>
               <input className="auth-input" placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} required />
               <input className="auth-input" type="password" placeholder="Password" value={password} onChange={e=>setPassword(e.target.value)} required />
               <button className="auth-btn" type="submit">{isLogin ? 'Sign In' : 'Create Account'}</button>
             </form>
+
+            {/* Divider */}
+            <div style={{display:'flex', alignItems:'center', gap:'12px', margin:'1.2rem 0'}}>
+              <div style={{flex:1, height:'1px', background:'#cbd5e1'}}></div>
+              <span style={{color:'#94a3b8', fontSize:'0.8rem', fontWeight:'600'}}>OR</span>
+              <div style={{flex:1, height:'1px', background:'#cbd5e1'}}></div>
+            </div>
+
+            {/* Google Sign-In Button */}
+            <button onClick={() => { setShowGooglePopup(true); setGError(''); setGEmail(''); setGPassword(''); }} style={{
+              width:'100%', padding:'12px', borderRadius:'8px', border:'1px solid #dadce0',
+              background:'white', cursor:'pointer', display:'flex', alignItems:'center',
+              justifyContent:'center', gap:'10px', fontSize:'0.95rem', fontWeight:'600',
+              color:'#3c4043', transition:'box-shadow 0.2s, background 0.2s',
+              boxShadow:'0 1px 3px rgba(60,64,67,0.15)'
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = '#f8f9fa'}
+            onMouseLeave={e => e.currentTarget.style.background = 'white'}
+            >
+              <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#34A853" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#FBBC05" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+              Sign in with Google
+            </button>
+
             <button className="auth-toggle" onClick={()=>setIsLogin(!isLogin)}>{isLogin ? 'Don\'t have an account? Sign Up' : 'Already have an account? Sign In'}</button>
           </div>
+
+          {/* Google Sign-In Popup Modal */}
+          {showGooglePopup && (
+            <div style={{
+              position:'fixed', top:0, left:0, width:'100%', height:'100%',
+              background:'rgba(0,0,0,0.5)', display:'flex', alignItems:'center',
+              justifyContent:'center', zIndex:9999, backdropFilter:'blur(4px)'
+            }} onClick={() => setShowGooglePopup(false)}>
+              <div style={{
+                background:'white', borderRadius:'16px', padding:'36px 32px',
+                width:'380px', maxWidth:'90vw', boxShadow:'0 20px 60px rgba(0,0,0,0.3)',
+                animation:'fadeIn 0.3s ease'
+              }} onClick={e => e.stopPropagation()}>
+                <div style={{textAlign:'center', marginBottom:'24px'}}>
+                  <svg width="40" height="40" viewBox="0 0 48 48" style={{marginBottom:'12px'}}><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#34A853" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#FBBC05" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+                  <h3 style={{margin:0, fontSize:'1.3rem', color:'#202124', fontWeight:'400'}}>Sign in with Google</h3>
+                  <p style={{margin:'6px 0 0', fontSize:'0.85rem', color:'#5f6368'}}>Use your Google Account</p>
+                </div>
+                {gError && <div style={{color:'#d93025', background:'#fce8e6', padding:'10px 14px', borderRadius:'8px', fontSize:'0.82rem', marginBottom:'14px'}}>{gError}</div>}
+                <form onSubmit={handleGoogleAuth}>
+                  <input value={gEmail} onChange={e => setGEmail(e.target.value)} placeholder="Email (xyz@gmail.com)" required style={{
+                    width:'100%', padding:'13px 14px', border:'1px solid #dadce0', borderRadius:'8px',
+                    fontSize:'0.95rem', marginBottom:'12px', boxSizing:'border-box', outline:'none',
+                    transition:'border 0.2s'
+                  }}
+                  onFocus={e => e.target.style.borderColor = '#4285F4'}
+                  onBlur={e => e.target.style.borderColor = '#dadce0'}
+                  />
+                  <input value={gPassword} onChange={e => setGPassword(e.target.value)} type="password" placeholder="Password (123)" required style={{
+                    width:'100%', padding:'13px 14px', border:'1px solid #dadce0', borderRadius:'8px',
+                    fontSize:'0.95rem', marginBottom:'20px', boxSizing:'border-box', outline:'none',
+                    transition:'border 0.2s'
+                  }}
+                  onFocus={e => e.target.style.borderColor = '#4285F4'}
+                  onBlur={e => e.target.style.borderColor = '#dadce0'}
+                  />
+                  <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                    <button type="button" onClick={() => setShowGooglePopup(false)} style={{
+                      background:'none', border:'none', color:'#1a73e8', fontSize:'0.9rem',
+                      fontWeight:'600', cursor:'pointer', padding:'8px 16px', borderRadius:'6px'
+                    }}>Cancel</button>
+                    <button type="submit" style={{
+                      background:'#1a73e8', color:'white', border:'none', padding:'10px 28px',
+                      borderRadius:'6px', fontSize:'0.9rem', fontWeight:'600', cursor:'pointer',
+                      transition:'background 0.2s'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = '#1557b0'}
+                    onMouseLeave={e => e.currentTarget.style.background = '#1a73e8'}
+                    >Sign in</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
         </div>
       );
     };
@@ -745,5 +953,17 @@
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<App />);
   </script>
+
+  <div id="google_translate_element"></div>
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en',
+        includedLanguages: 'en,hi,gu,mr,ta,te,pa,bn',
+        autoDisplay: false
+      }, 'google_translate_element');
+    }
+  </script>
+  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>

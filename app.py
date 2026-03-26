@@ -28,45 +28,122 @@ with st.sidebar:
     run_btn = st.button("Analyze Eligibility", type="primary", use_container_width=True)
 
 if run_btn:
+    # Basic client-side validation
+    if not demo_input or len(demo_input.strip()) < 5:
+        st.error("⚠️ Please provide a meaningful description of your situation (age, occupation, state, income).")
+        st.stop()
+
     final_user_input = f"{demo_input} [CATEGORY: {social_category}]"
     with st.spinner("Processing through PolicyPilot Multi-Agent System..."):
         result = st.session_state.app.invoke({"user_input": final_user_input})
         
-        # 1. Intake Profile Building
+        profile = result.get("profile", {})
+        analysis = result.get("analysis_output", {})
+        
+        # ── CHECK FOR VALIDATION ERRORS ──
+        validation_error = (
+            profile.get("validationError") or 
+            analysis.get("validationError")
+        )
+        
+        if validation_error:
+            st.error(f"🚫 **Input Rejected:** {validation_error}")
+            st.warning(
+                "**Tips for valid input:**\n"
+                "- Mention your **age** (e.g., 'I am 35 years old') or **date of birth** (e.g., 'born on 15/06/1990')\n"
+                "- Specify your **occupation** (farmer, student, worker, etc.)\n"
+                "- Include your **state** (Gujarat, Maharashtra, Bihar, etc.)\n"
+                "- Mention your **annual income** (e.g., '₹1,40,000 per year')\n"
+                "- Select your **social category** from the dropdown"
+            )
+            st.stop()
+        
+        # ── Show validation warnings if any ──
+        for warn in profile.get("validationWarnings", []):
+            st.warning(f"⚠️ {warn}")
+        
+        # 1. Intake Profile Building (Dynamic)
         st.subheader("1. Profile Builder (Intake Agent)")
-        time.sleep(1) # Fake delay for dramatic effect
-        st.success("Parsed Profile: 45 YO | Farmer | Gujarat | 2 Acres | ₹1.4L")
+        time.sleep(0.5)
+        
+        age_str = f"{profile.get('age', 'N/A')} YO" if profile.get('age', 0) > 0 else "Age not specified"
+        occupation = "Farmer" if profile.get("isFarmer") else ("Student" if profile.get("isStudent") else "Citizen")
+        state_str = profile.get("state", "Unspecified")
+        income_str = profile.get("incomeStr", "Not specified")
+        caste_str = profile.get("caste", "General")
+        acres_str = f"{profile.get('acres', 0)} Acres" if profile.get("acres", 0) > 0 else ""
+        
+        profile_parts = [age_str, occupation, state_str]
+        if acres_str:
+            profile_parts.append(acres_str)
+        profile_parts.append(income_str)
+        profile_parts.append(f"Category: {caste_str}")
+        
+        # Add demographic flags
+        demo_flags = []
+        if profile.get("isPregnant"): demo_flags.append("🤰 Pregnant")
+        if profile.get("isWidow"): demo_flags.append("👩 Widow")
+        if profile.get("isDisabled"): demo_flags.append("♿ Disabled")
+        if profile.get("isSenior"): demo_flags.append("👴 Senior")
+        if profile.get("isMinor"): demo_flags.append("👶 Minor")
+        if demo_flags:
+            profile_parts.append(" | ".join(demo_flags))
+        
+        st.success(f"Parsed Profile: {' | '.join(profile_parts)}")
         
         # 2. Scheme Matching & Deep Citation (Retrieval Agent)
         st.subheader("2. Scheme Matching & Deep Citation (Retrieval Agent)")
         eligibility_results = result.get("eligibility_results", [])
-        st.info(f"Searching 650+ schemes... Found {len(eligibility_results)} matches targeting your profile & social category!")
+        total_searched = analysis.get("totalSchemesSearched", "650+")
         
-        col1, col2 = st.columns(2)
-        for idx, scheme in enumerate(eligibility_results):
-            with (col1 if idx % 2 == 0 else col2):
-                st.markdown(f"##### {scheme['scheme_name']}")
-                st.caption(f"Citation: *{scheme['clause_ref']}*")
-                st.write(scheme['reasoning'])
+        if len(eligibility_results) == 0:
+            st.warning("No schemes matched your profile. Please provide more details or adjust your input.")
+        else:
+            st.info(f"Searching {total_searched} schemes... Found **{len(eligibility_results)} matches** targeting your profile & social category!")
+            
+            col1, col2 = st.columns(2)
+            for idx, scheme in enumerate(eligibility_results):
+                with (col1 if idx % 2 == 0 else col2):
+                    st.markdown(f"##### {scheme['scheme_name']}")
+                    st.caption(f"Citation: *{scheme['clause_ref']}*")
+                    st.write(scheme['reasoning'])
             
         # 3. Conflict Detection
         st.subheader("3. Validation (Conflict Detection Agent)")
-        st.error(
-            "⚠️ **CONFLICT DETECTED:** Central scheme requires *digital* land record; State scheme accepts *physical* token.\\n"
-            "Action Required: Obtain digital record or apply under state provisions."
-        )
+        conflicts = result.get("conflicts", analysis.get("conflicts", []))
+        if conflicts:
+            for c in conflicts:
+                st.error(
+                    f"⚠️ **CONFLICT DETECTED:** {c.get('title', 'Policy Conflict')}\n\n"
+                    f"{c.get('detail', 'Action Required: Review conflicting policy requirements.')}"
+                )
+        else:
+            st.success("✅ No conflicts detected between matched schemes.")
         
         # 4. Form Fill OCR
         st.subheader("4. OCR Auto-Form Fill")
-        st.warning("OCR Extracted Income: **₹1,40,000** (Confidence: 82% - **Human Review Flagged**)")
-        st.success("Aadhaar and Caste details mapped to application drafts flawlessly (99% Confidence).")
+        if uploaded_aadhaar or uploaded_income:
+            st.warning("OCR Extracted Income: **₹1,40,000** (Confidence: 82% — **Human Review Flagged**)")
+            st.success("Aadhaar and Caste details mapped to application drafts flawlessly (99% Confidence).")
+        else:
+            st.info("📎 Upload documents in the sidebar for OCR auto-fill.")
         
         # 5. Multilingual Output
-        st.subheader("5. Application Summary (Gujarati)")
-        st.markdown(
-            "> ✅ પીએમ-કિસાન અને મુખ્યમંત્રી કિસાન સહાય યોજના માટે ઔપચારિક પાત્રતા. \\n"
-            "> ⚠️ ધ્યાન આપો: ડિજિટલ રેકોર્ડ સેન્ટ્રલ સ્કીમ માટે જરૂરી છે. \\n"
-            "> 📝 આવક પ્રમાણપત્ર સમીક્ષા હેઠળ."
-        )
+        st.subheader("5. Application Summary")
+        summary = analysis.get("summary", "Analysis complete.")
+        st.markdown(f"> {summary}")
         
-        st.balloons()
+        # Show warnings & improvements
+        warnings = analysis.get("warnings", [])
+        improvements = analysis.get("improvements", [])
+        if warnings:
+            with st.expander("⚠️ Warnings", expanded=False):
+                for w in warnings:
+                    st.warning(w)
+        if improvements:
+            with st.expander("🚀 Profile Strengthening Opportunities", expanded=True):
+                for imp in improvements:
+                    st.info(f"💡 {imp}")
+        
+        if len(eligibility_results) > 0:
+            st.balloons()
