@@ -943,7 +943,7 @@
       useEffect(() => {
         const saved = localStorage.getItem('yojnaai_sess');
         if (saved) setUser(JSON.parse(saved));
-        fetch('/api/schemes').then(r=>r.json()).then(d=>setSchemes(d.schemes)).finally(()=>setLoading(false));
+        fetch('http://localhost:5001/api/schemes').then(r=>r.json()).then(d=>setSchemes(d.schemes)).finally(()=>setLoading(false));
       }, []);
 
       if (loading) return <div className="spinner-container"><div className="spinner" /></div>;

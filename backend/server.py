@@ -13,16 +13,27 @@ from flask_cors import CORS
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from eligibility import analyze, load_schemes, load_pdf_registry, load_conflict_rules
 
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FRONTEND_DIR = os.path.join(PROJECT_ROOT, "frontend")
+# Determine base paths for unified serving
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+FRONTEND_DIR = os.path.join(BASE_DIR, "frontend")
+DATA_DIR = os.path.join(BASE_DIR, "data")
 
-app = Flask(__name__, static_folder=FRONTEND_DIR)
+app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True,
      allow_headers=["Content-Type", "X-Gemini-Key"])
 
-DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+# 1. UI & STATIC SERVING
+@app.route("/")
+def index():
+    """Serve the main frontend application."""
+    return send_from_directory(FRONTEND_DIR, "standalone_react.html")
 
+@app.route("/assets/<path:path>")
+def send_assets(path):
+    """Serve static media assets (images, etc)."""
+    return send_from_directory(os.path.join(FRONTEND_DIR, "assets"), path)
 
+# 2. API ENDPOINTS
 @app.route("/api/health", methods=["GET"])
 def health():
     """Health check endpoint."""
@@ -92,7 +103,7 @@ def analyze_eligibility():
         return jsonify(result)
     except Exception as e:
         import traceback
-        log_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "backend_errors.log")
+        log_path = os.path.join(BASE_DIR, "backend_errors.log")
         with open(log_path, "a", encoding="utf-8") as f:
             f.write(f"\n--- ANALYSIS ERROR ---\n")
             f.write(traceback.format_exc())
@@ -164,7 +175,7 @@ def chat():
         if "api key not valid" in err_str or "api_key_invalid" in err_str or "invalid" in err_str:
             return jsonify({"reply": "⚠️ Your Gemini API Key is invalid. Please click ⚙️ Settings and paste a valid key from https://aistudio.google.com/app/apikey"})
         
-        log_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "backend_errors.log")
+        log_path = os.path.join(BASE_DIR, "backend_errors.log")
         with open(log_path, "a", encoding="utf-8") as f:
             f.write(f"\n--- CHAT GENERATION ERROR ---\n")
             f.write(traceback.format_exc())
@@ -197,36 +208,19 @@ def get_conflict_rules():
     })
 
 
-# --- Static File Serving (for deployment) ---
-@app.route('/')
-def serve_frontend():
-    return send_from_directory(FRONTEND_DIR, 'standalone_react.html')
-
-@app.route('/assets/<path:filename>')
-def serve_assets(filename):
-    return send_from_directory(os.path.join(FRONTEND_DIR, 'assets'), filename)
-
-@app.route('/manifest.json')
-def serve_manifest():
-    return send_from_directory(FRONTEND_DIR, 'manifest.json')
-
-@app.route('/sw.js')
-def serve_sw():
-    return send_from_directory(FRONTEND_DIR, 'sw.js')
-
-
 if __name__ == "__main__":
     print("=" * 50)
-    print("YojanaAI Backend API Server")
+    print("YojnaAI Backend API Server (Unified Mode)")
     print("=" * 50)
+    print(f"Base directory: {BASE_DIR}")
     print(f"Data directory: {DATA_DIR}")
-    print("Serving frontend from:", FRONTEND_DIR)
     print("Endpoints:")
-    print("  GET  /               — Frontend UI")
-    print("  GET  /api/health     — Health check")
-    print("  GET  /api/schemes    — All schemes")
-    print("  POST /api/analyze    — Run eligibility analysis")
-    print("  POST /api/chat       — Chatbot")
+    print("  GET  /                  — Main UI")
+    print("  GET  /api/health        — Health check")
+    print("  GET  /api/schemes       — All schemes")
+    print("  POST /api/analyze       — Run eligibility analysis")
     print("=" * 50)
-    port = int(os.environ.get('PORT', 5001))
+    
+    # 12-FACTOR: Read port from environment variable
+    port = int(os.environ.get("PORT", 5001))
     app.run(host="0.0.0.0", port=port, debug=False)
