@@ -6,14 +6,17 @@ Serves scheme data, runs eligibility analysis, and provides PDF registry.
 import json
 import os
 import sys
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 
 # Add project root to path so we can import from backend/
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from eligibility import analyze, load_schemes, load_pdf_registry, load_conflict_rules
 
-app = Flask(__name__)
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+FRONTEND_DIR = os.path.join(PROJECT_ROOT, "frontend")
+
+app = Flask(__name__, static_folder=FRONTEND_DIR)
 CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True,
      allow_headers=["Content-Type", "X-Gemini-Key"])
 
@@ -194,16 +197,36 @@ def get_conflict_rules():
     })
 
 
+# --- Static File Serving (for deployment) ---
+@app.route('/')
+def serve_frontend():
+    return send_from_directory(FRONTEND_DIR, 'standalone_react.html')
+
+@app.route('/assets/<path:filename>')
+def serve_assets(filename):
+    return send_from_directory(os.path.join(FRONTEND_DIR, 'assets'), filename)
+
+@app.route('/manifest.json')
+def serve_manifest():
+    return send_from_directory(FRONTEND_DIR, 'manifest.json')
+
+@app.route('/sw.js')
+def serve_sw():
+    return send_from_directory(FRONTEND_DIR, 'sw.js')
+
+
 if __name__ == "__main__":
     print("=" * 50)
-    print("YojnaAI Backend API Server")
+    print("YojanaAI Backend API Server")
     print("=" * 50)
     print(f"Data directory: {DATA_DIR}")
+    print("Serving frontend from:", FRONTEND_DIR)
     print("Endpoints:")
-    print("  GET  /api/health        — Health check")
-    print("  GET  /api/schemes       — All schemes (?category=&scope=)")
-    print("  POST /api/analyze       — Run eligibility analysis")
-    print("  GET  /api/pdf-registry  — PDF source metadata")
-    print("  GET  /api/conflicts     — Conflict detection rules")
+    print("  GET  /               — Frontend UI")
+    print("  GET  /api/health     — Health check")
+    print("  GET  /api/schemes    — All schemes")
+    print("  POST /api/analyze    — Run eligibility analysis")
+    print("  POST /api/chat       — Chatbot")
     print("=" * 50)
-    app.run(host="0.0.0.0", port=5001, debug=True)
+    port = int(os.environ.get('PORT', 5001))
+    app.run(host="0.0.0.0", port=port, debug=False)

@@ -294,7 +294,7 @@
         setMessages(prev => [...prev, { sender: 'bot', text: 'Thinking...', isTyping: true }]);
 
         try {
-          const response = await fetch('http://localhost:5001/api/chat', {
+          const response = await fetch('/api/chat', {
             method: 'POST',
             headers: { 
               'Content-Type': 'application/json',
@@ -395,7 +395,7 @@
       const handleAnalyze = async () => {
         setIsProcessing(true);
         try {
-          const res = await fetch('http://localhost:5001/api/analyze', {
+          const res = await fetch('/api/analyze', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ text: inputText, income: Number(income), state, category, caste, language })
@@ -943,7 +943,7 @@
       useEffect(() => {
         const saved = localStorage.getItem('yojnaai_sess');
         if (saved) setUser(JSON.parse(saved));
-        fetch('http://localhost:5001/api/schemes').then(r=>r.json()).then(d=>setSchemes(d.schemes)).finally(()=>setLoading(false));
+        fetch('/api/schemes').then(r=>r.json()).then(d=>setSchemes(d.schemes)).finally(()=>setLoading(false));
       }, []);
 
       if (loading) return <div className="spinner-container"><div className="spinner" /></div>;

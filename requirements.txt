@@ -12,3 +12,4 @@ flask>=3.0.0
 flask-cors>=4.0.0
 google-generativeai>=4.0.0
 deep-translator>=1.11.4
+gunicorn>=21.2.0
